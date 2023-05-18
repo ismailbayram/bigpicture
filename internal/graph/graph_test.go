@@ -6,7 +6,7 @@ import (
 )
 
 func TestNewNode(t *testing.T) {
-	node := NewNode("package", "path/dir", nil)
+	node := NewNode("package", "path/dir", nil, Dir)
 	assert.Equal(t, "package", node.PackageName)
 	assert.Equal(t, "path/dir", node.Path)
 	assert.Equal(t, 0, len(node.Imports))
@@ -14,9 +14,9 @@ func TestNewNode(t *testing.T) {
 }
 
 func TestNode_AddImports(t *testing.T) {
-	parentNode := NewNode("package", "parent", nil)
-	importingNode := NewNode("importing package", "parent/importing", parentNode)
-	importedNode := NewNode("other package", "path/dir", nil)
+	parentNode := NewNode("package", "parent", nil, Dir)
+	importingNode := NewNode("importing package", "parent/importing", parentNode, Dir)
+	importedNode := NewNode("other package", "path/dir", nil, Dir)
 
 	importingNode.AddImport(importedNode)
 	assert.Equal(t, 1, len(importingNode.Imports))
@@ -28,16 +28,16 @@ func TestNode_AddImports(t *testing.T) {
 }
 
 func TestNewEdge(t *testing.T) {
-	nodeFrom := NewNode("package", "path/dir", nil)
-	nodeTo := NewNode("package", "path/dir", nil)
+	nodeFrom := NewNode("package", "path/dir", nil, Dir)
+	nodeTo := NewNode("package", "path/dir", nil, Dir)
 	edge := NewEdge(nodeFrom, nodeTo)
 	assert.Equal(t, nodeFrom, edge.From)
 	assert.Equal(t, nodeTo, edge.To)
 }
 
 func TestNode_AddChild(t *testing.T) {
-	parentNode := NewNode("package", "parent", nil)
-	childNode := NewNode("child package", "parent/child", parentNode)
+	parentNode := NewNode("package", "parent", nil, Dir)
+	childNode := NewNode("child package", "parent/child", parentNode, Dir)
 	parentNode.AddChild(childNode)
 	assert.Equal(t, 1, len(parentNode.Children))
 	assert.Equal(t, childNode, parentNode.Children[0])

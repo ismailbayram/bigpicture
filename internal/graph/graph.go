@@ -1,18 +1,33 @@
 package graph
 
+import "strings"
+
+type Type uint
+
+const (
+	Dir Type = 1 << iota
+	File
+)
+
 type Node struct {
 	PackageName string
 	Path        string
 	Parent      *Node
 	Children    []*Node
 	Imports     []Edge
+	Type        Type
 }
 
-func NewNode(packageName string, path string, parent *Node) *Node {
+func NewNode(packageName string, path string, parent *Node, _type Type) *Node {
+	if strings.HasPrefix(path, "./") {
+		path = path[2:]
+	}
+
 	return &Node{
 		PackageName: packageName,
 		Path:        path,
 		Parent:      parent,
+		Type:        _type,
 	}
 }
 
