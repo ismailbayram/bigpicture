@@ -2,15 +2,16 @@ package graph
 
 type Node struct {
 	PackageName string
-	Dir         string
+	Path        string
 	Parent      *Node
+	Children    []*Node
 	Imports     []Edge
 }
 
-func NewNode(packageName string, dir string, parent *Node) *Node {
+func NewNode(packageName string, path string, parent *Node) *Node {
 	return &Node{
 		PackageName: packageName,
-		Dir:         dir,
+		Path:        path,
 		Parent:      parent,
 	}
 }
@@ -25,6 +26,10 @@ func (n *Node) AddImport(imported *Node) {
 		edge := NewEdge(n, imported)
 		node.Imports = append(node.Imports, edge)
 	}
+}
+
+func (n *Node) AddChild(child *Node) {
+	n.Children = append(n.Children, child)
 }
 
 type Edge struct {

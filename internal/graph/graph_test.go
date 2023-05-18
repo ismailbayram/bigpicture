@@ -8,7 +8,7 @@ import (
 func TestNewNode(t *testing.T) {
 	node := NewNode("package", "path/dir", nil)
 	assert.Equal(t, "package", node.PackageName)
-	assert.Equal(t, "path/dir", node.Dir)
+	assert.Equal(t, "path/dir", node.Path)
 	assert.Equal(t, 0, len(node.Imports))
 	assert.Nilf(t, node.Parent, "Parent should be nil.")
 }
@@ -33,4 +33,12 @@ func TestNewEdge(t *testing.T) {
 	edge := NewEdge(nodeFrom, nodeTo)
 	assert.Equal(t, nodeFrom, edge.From)
 	assert.Equal(t, nodeTo, edge.To)
+}
+
+func TestNode_AddChild(t *testing.T) {
+	parentNode := NewNode("package", "parent", nil)
+	childNode := NewNode("child package", "parent/child", parentNode)
+	parentNode.AddChild(childNode)
+	assert.Equal(t, 1, len(parentNode.Children))
+	assert.Equal(t, childNode, parentNode.Children[0])
 }
