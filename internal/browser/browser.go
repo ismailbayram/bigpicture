@@ -27,7 +27,9 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 				return err
 			}
 		} else if strings.HasSuffix(fName, ".go") {
-			return parseFile(parentPath, moduleName, parentNode)
+			if err := parseFile(path, moduleName, parentNode); err != nil {
+				return err
+			}
 		}
 	}
 

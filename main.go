@@ -18,13 +18,15 @@ func main() {
 		panic(err)
 	}
 
-	PrintTree(rootNode, 0)
+	tree.ConvertImportRaw()
+	PrintTree(tree.Root, 0)
 }
 
 func PrintTree(node *graph.Node, depth int) {
+
 	for _, child := range node.Children {
 		fmt.Println(strings.Repeat(" ", depth), child.PackageName, child.Path, child.Type)
-		//fmt.Println(strings.Repeat(" ", depth), child.Imports)
+		fmt.Println(strings.Repeat(" ", depth), child.Imports)
 		PrintTree(child, depth+1)
 	}
 }

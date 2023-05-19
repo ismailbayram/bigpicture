@@ -27,7 +27,7 @@ func (t *Tree) ConvertImportRaw() {
 	for _, node := range t.Nodes {
 		for _, imported := range node.importRaw {
 			node.Imports = append(node.Imports, t.Nodes[imported])
-			for node.Parent != nil && node.PackageName == node.Parent.PackageName {
+			for node.Parent != nil && node.Parent != t.Root {
 				node = node.Parent
 				node.Imports = append(node.Imports, t.Nodes[imported])
 			}
