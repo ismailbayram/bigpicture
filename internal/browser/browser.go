@@ -9,8 +9,8 @@ import (
 	"strings"
 )
 
-func Browse(path string, moduleName string, parentNode *graph.Node) error {
-	entries, err := os.ReadDir(path)
+func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *graph.Tree) error {
+	entries, err := os.ReadDir(parentPath)
 
 	if err != nil {
 		return err
@@ -18,37 +18,43 @@ func Browse(path string, moduleName string, parentNode *graph.Node) error {
 
 	for _, e := range entries {
 		fName := e.Name()
+		path := fmt.Sprintf("%s/%s", parentPath, fName)
+
 		if e.IsDir() && !strings.Contains(fName, ".") {
-			dirPath := fmt.Sprintf("%s/%s", path, fName)
-			node := graph.NewNode(fName, dirPath, parentNode, graph.Dir)
+			node := graph.NewNode(fName, path, parentNode, graph.Dir, nil)
 			parentNode.AddChild(node)
-			if err := Browse(dirPath, moduleName, node); err != nil {
+			if err := Browse(path, moduleName, node, tree); err != nil {
 				return err
 			}
 		} else if strings.HasSuffix(fName, ".go") {
-			return parseFile(fName, path, moduleName, parentNode)
+			return parseFile(parentPath, moduleName, parentNode)
 		}
 	}
+
+	for _, node := range parentNode.Children {
+		tree.Nodes[node.Path] = node
+	}
+
 	return nil
 }
 
-func parseFile(fName string, path, moduleName string, parentNode *graph.Node) error {
-	filePath := fmt.Sprintf("%s/%s", path, fName)
+func parseFile(path string, moduleName string, parentNode *graph.Node) error {
 
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, filePath, nil, parser.ImportsOnly)
+	f, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
 	if err != nil {
 		return err
 	}
 
+	var imports []string
 	for _, s := range f.Imports {
 		if strings.Contains(s.Path.Value, moduleName) {
-			fmt.Println(s.Path.Value)
+			_path := strings.Split(strings.Trim(s.Path.Value, "\""), moduleName)[1]
+			imports = append(imports, _path)
 		}
 	}
-	fmt.Println("----")
 
-	node := graph.NewNode(fName, filePath, parentNode, graph.File)
+	node := graph.NewNode(f.Name.Name, path, parentNode, graph.File, imports)
 	parentNode.AddChild(node)
 	parentNode.PackageName = f.Name.Name
 	node.PackageName = f.Name.Name

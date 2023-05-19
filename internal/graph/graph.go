@@ -9,18 +9,46 @@ const (
 	File
 )
 
+type Tree struct {
+	Root  *Node
+	Nodes map[string]*Node
+}
+
+func NewTree(root *Node) *Tree {
+	tree := &Tree{
+		Root:  root,
+		Nodes: make(map[string]*Node),
+	}
+	tree.Nodes[root.Path] = root
+	return tree
+}
+
+func (t *Tree) ConvertImportRaw() {
+	for _, node := range t.Nodes {
+		for _, imported := range node.importRaw {
+			node.Imports = append(node.Imports, t.Nodes[imported])
+			for node.Parent != nil && node.PackageName == node.Parent.PackageName {
+				node = node.Parent
+				node.Imports = append(node.Imports, t.Nodes[imported])
+			}
+		}
+	}
+}
+
 type Node struct {
 	PackageName string
 	Path        string
 	Parent      *Node
 	Children    []*Node
-	Imports     []Edge
+	Imports     []*Node
 	Type        Type
+
+	importRaw []string
 }
 
-func NewNode(packageName string, path string, parent *Node, _type Type) *Node {
+func NewNode(packageName string, path string, parent *Node, _type Type, importRaw []string) *Node {
 	if strings.HasPrefix(path, "./") {
-		path = path[2:]
+		path = path[1:]
 	}
 
 	return &Node{
@@ -28,30 +56,10 @@ func NewNode(packageName string, path string, parent *Node, _type Type) *Node {
 		Path:        path,
 		Parent:      parent,
 		Type:        _type,
-	}
-}
-
-func (n *Node) AddImport(imported *Node) {
-	edge := NewEdge(n, imported)
-	n.Imports = append(n.Imports, edge)
-
-	node := n
-	for node.Parent != nil {
-		node = node.Parent
-		edge := NewEdge(n, imported)
-		node.Imports = append(node.Imports, edge)
+		importRaw:   importRaw,
 	}
 }
 
 func (n *Node) AddChild(child *Node) {
 	n.Children = append(n.Children, child)
-}
-
-type Edge struct {
-	From *Node
-	To   *Node
-}
-
-func NewEdge(from *Node, to *Node) Edge {
-	return Edge{From: from, To: to}
 }
