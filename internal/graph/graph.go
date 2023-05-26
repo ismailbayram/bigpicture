@@ -1,6 +1,10 @@
 package graph
 
-import "strings"
+import (
+	"encoding/json"
+	"fmt"
+	"strings"
+)
 
 type Type uint
 
@@ -10,8 +14,9 @@ const (
 )
 
 type Tree struct {
-	Root  *Node
-	Nodes map[string]*Node
+	Root  *Node            `json:"root"`
+	Nodes map[string]*Node `json:"nodes"`
+	Links []*Link          `json:"links"`
 }
 
 func NewTree(root *Node) *Tree {
@@ -23,43 +28,80 @@ func NewTree(root *Node) *Tree {
 	return tree
 }
 
-func (t *Tree) ConvertImportRaw() {
+func (t *Tree) GenerateLinks() {
 	for _, node := range t.Nodes {
 		for _, imported := range node.importRaw {
-			node.Imports = append(node.Imports, t.Nodes[imported])
-			for node.Parent != nil && node.Parent != t.Root {
-				node = node.Parent
-				node.Imports = append(node.Imports, t.Nodes[imported])
+			t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
+
+			for node.Parent != "" && node.Parent != t.Root.Path {
+				node = t.Nodes[node.Parent]
+				t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
 			}
 		}
 	}
 }
 
 type Node struct {
-	PackageName string
-	Path        string
-	Parent      *Node
-	Children    []*Node
-	Imports     []*Node
-	Type        Type
+	PackageName string `json:"package_name"`
+	Path        string `json:"path"`
+	Parent      string `json:"parent"`
+	Type        Type   `json:"type"`
 
 	importRaw []string
 }
 
-func NewNode(packageName string, path string, parent *Node, _type Type, importRaw []string) *Node {
+func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {
 	if strings.HasPrefix(path, "./") {
 		path = path[1:]
 	}
 
-	return &Node{
+	node := &Node{
 		PackageName: packageName,
 		Path:        path,
-		Parent:      parent,
 		Type:        _type,
 		importRaw:   importRaw,
 	}
+	fmt.Println(path)
+	if strings.Contains(path, "/") {
+
+		dirs := strings.Split(path, "/")
+		fmt.Println(dirs)
+		node.Parent = strings.Join(dirs[:len(dirs)-1], "/")
+	}
+
+	return node
 }
 
-func (n *Node) AddChild(child *Node) {
-	n.Children = append(n.Children, child)
+func (n *Node) ToJSON() string {
+	data, err := json.Marshal(n)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
+}
+
+type Link struct {
+	From *Node `json:"from"`
+	To   *Node `json:"to"`
+}
+
+func NewLink(from *Node, to *Node) *Link {
+	return &Link{
+		From: from,
+		To:   to,
+	}
+}
+
+func (l *Link) ToJSON() string {
+	data, err := json.Marshal(struct {
+		From string `json:"from"`
+		To   string `json:"to"`
+	}{
+		From: l.From.Path,
+		To:   l.To.Path,
+	})
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
 }

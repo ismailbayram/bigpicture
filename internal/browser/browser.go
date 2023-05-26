@@ -21,8 +21,7 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 		path := fmt.Sprintf("%s/%s", parentPath, fName)
 
 		if e.IsDir() && !strings.Contains(fName, ".") {
-			node := graph.NewNode(fName, path, parentNode, graph.Dir, nil)
-			parentNode.AddChild(node)
+			node := graph.NewNode(fName, path, graph.Dir, nil)
 			if err := Browse(path, moduleName, node, tree); err != nil {
 				return err
 			}
@@ -31,10 +30,6 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 				return err
 			}
 		}
-	}
-
-	for _, node := range parentNode.Children {
-		tree.Nodes[node.Path] = node
 	}
 
 	return nil
@@ -56,8 +51,7 @@ func parseFile(path string, moduleName string, parentNode *graph.Node) error {
 		}
 	}
 
-	node := graph.NewNode(f.Name.Name, path, parentNode, graph.File, imports)
-	parentNode.AddChild(node)
+	node := graph.NewNode(f.Name.Name, path, graph.File, imports)
 	parentNode.PackageName = f.Name.Name
 	node.PackageName = f.Name.Name
 

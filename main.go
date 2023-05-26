@@ -11,24 +11,24 @@ import (
 
 func main() {
 	moduleName := getModuleName()
-	rootNode := graph.NewNode(moduleName, ".", nil, graph.Dir, nil)
+	rootNode := graph.NewNode(moduleName, ".", graph.Dir, nil)
 	tree := graph.NewTree(rootNode)
 
 	if err := browser.Browse(".", moduleName, rootNode, tree); err != nil {
 		panic(err)
 	}
+	tree.GenerateLinks()
+	fmt.Println(rootNode.ToJSON())
 
-	tree.ConvertImportRaw()
-	PrintTree(tree.Root, 0)
-}
-
-func PrintTree(node *graph.Node, depth int) {
-
-	for _, child := range node.Children {
-		fmt.Println(strings.Repeat(" ", depth), child.PackageName, child.Path, child.Type)
-		fmt.Println(strings.Repeat(" ", depth), child.Imports)
-		PrintTree(child, depth+1)
-	}
+	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web"))))
+	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	//	http.ServeFile(w, r, "./web/index.html")
+	//
+	//})
+	//err := http.ListenAndServe(":8080", nil)
+	//if err != nil {
+	//	panic(err)
+	//}
 }
 
 func getModuleName() string {
