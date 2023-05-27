@@ -18,7 +18,7 @@ func main() {
 		panic(err)
 	}
 	tree.GenerateLinks()
-	fmt.Println(rootNode.ToJSON())
+	fmt.Println(tree.ToJSON())
 
 	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web"))))
 	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {

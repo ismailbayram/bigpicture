@@ -2,7 +2,6 @@ package graph
 
 import (
 	"encoding/json"
-	"fmt"
 	"strings"
 )
 
@@ -41,6 +40,14 @@ func (t *Tree) GenerateLinks() {
 	}
 }
 
+func (t *Tree) ToJSON() string {
+	data, err := json.Marshal(t)
+	if err != nil {
+		panic(err)
+	}
+	return string(data)
+}
+
 type Node struct {
 	PackageName string `json:"package_name"`
 	Path        string `json:"path"`
@@ -61,11 +68,8 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 		Type:        _type,
 		importRaw:   importRaw,
 	}
-	fmt.Println(path)
 	if strings.Contains(path, "/") {
-
 		dirs := strings.Split(path, "/")
-		fmt.Println(dirs)
 		node.Parent = strings.Join(dirs[:len(dirs)-1], "/")
 	}
 

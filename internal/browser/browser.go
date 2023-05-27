@@ -22,25 +22,25 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 
 		if e.IsDir() && !strings.Contains(fName, ".") {
 			node := graph.NewNode(fName, path, graph.Dir, nil)
+			tree.Nodes[node.Path] = node
 			if err := Browse(path, moduleName, node, tree); err != nil {
 				return err
 			}
 		} else if strings.HasSuffix(fName, ".go") {
-			if err := parseFile(path, moduleName, parentNode); err != nil {
-				return err
-			}
+			node := parseFile(path, moduleName, parentNode)
+			tree.Nodes[node.Path] = node
 		}
 	}
 
 	return nil
 }
 
-func parseFile(path string, moduleName string, parentNode *graph.Node) error {
+func parseFile(path string, moduleName string, parentNode *graph.Node) *graph.Node {
 
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
 	if err != nil {
-		return err
+		panic(err)
 	}
 
 	var imports []string
@@ -55,5 +55,5 @@ func parseFile(path string, moduleName string, parentNode *graph.Node) error {
 	parentNode.PackageName = f.Name.Name
 	node.PackageName = f.Name.Name
 
-	return nil
+	return node
 }
