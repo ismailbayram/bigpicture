@@ -28,7 +28,7 @@ func TestTree_GenerateLinks(t *testing.T) {
 
 	tree.GenerateLinks()
 
-	assert.Equal(t, 5, len(tree.Links))
+	assert.Equal(t, 4, len(tree.Links))
 
 	assert.Equal(t, root, tree.Links[0].From)
 	assert.Equal(t, node1, tree.Links[0].To)
@@ -39,11 +39,11 @@ func TestTree_GenerateLinks(t *testing.T) {
 	assert.Equal(t, node1_file, tree.Links[2].From)
 	assert.Equal(t, node2, tree.Links[2].To)
 
-	assert.Equal(t, node1, tree.Links[3].From)
-	assert.Equal(t, node2, tree.Links[3].To)
+	//assert.Equal(t, node1, tree.Links[3].From)
+	//assert.Equal(t, node2, tree.Links[3].To)
 
-	assert.Equal(t, node2, tree.Links[4].From)
-	assert.Equal(t, node3, tree.Links[4].To)
+	assert.Equal(t, node2, tree.Links[3].From)
+	assert.Equal(t, node3, tree.Links[3].To)
 }
 
 func TestNewNode(t *testing.T) {
@@ -57,4 +57,24 @@ func TestNewNode(t *testing.T) {
 	assert.Equal(t, "package", node.PackageName)
 	assert.Equal(t, "/path/dir", node.Path)
 	assert.Equal(t, 2, len(node.importRaw))
+}
+
+func TestNode_ToJSON(t *testing.T) {
+	node := NewNode("package", "path/dir", Dir, nil)
+	assert.Equal(t, "{\"package_name\":\"package\",\"path\":\"path/dir\",\"parent\":\"path\",\"type\":1}", node.ToJSON())
+}
+
+func TestNewLink(t *testing.T) {
+	node1 := NewNode("package1", "path/node1", Dir, []string{})
+	node2 := NewNode("package2", "path/node2", Dir, []string{})
+	link := NewLink(node1, node2)
+	assert.Equal(t, node1, link.From)
+	assert.Equal(t, node2, link.To)
+}
+
+func TestLink_ToJSON(t *testing.T) {
+	node1 := NewNode("package1", "path/node1", Dir, []string{})
+	node2 := NewNode("package2", "path/node2", Dir, []string{})
+	link := NewLink(node1, node2)
+	assert.Equal(t, "{\"from\":\"path/node1\",\"to\":\"path/node2\"}", link.ToJSON())
 }

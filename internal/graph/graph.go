@@ -32,10 +32,10 @@ func (t *Tree) GenerateLinks() {
 		for _, imported := range node.importRaw {
 			t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
 
-			for node.Parent != "" && node.Parent != t.Root.Path {
-				node = t.Nodes[node.Parent]
-				t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
-			}
+			//for node.Parent != "" && node.Parent != t.Root.Path {
+			//	node = t.Nodes[node.Parent]
+			//	t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
+			//}
 		}
 	}
 }
@@ -71,6 +71,9 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 	if strings.Contains(path, "/") {
 		dirs := strings.Split(path, "/")
 		node.Parent = strings.Join(dirs[:len(dirs)-1], "/")
+		if node.Parent == "" {
+			node.Parent = "."
+		}
 	}
 
 	return node

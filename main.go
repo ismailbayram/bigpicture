@@ -2,9 +2,9 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/browser"
 	"github.com/ismailbayram/bigpicture/internal/graph"
+	"net/http"
 	"os"
 	"strings"
 )
@@ -18,17 +18,20 @@ func main() {
 		panic(err)
 	}
 	tree.GenerateLinks()
-	fmt.Println(tree.ToJSON())
 
-	//http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web"))))
-	//http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	//	http.ServeFile(w, r, "./web/index.html")
-	//
-	//})
-	//err := http.ListenAndServe(":8080", nil)
-	//if err != nil {
-	//	panic(err)
-	//}
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./web"))))
+	http.HandleFunc("/graph", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		w.Write([]byte(tree.ToJSON()))
+	})
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./web/index.html")
+
+	})
+	err := http.ListenAndServe(":44525", nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func getModuleName() string {

@@ -36,7 +36,6 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 }
 
 func parseFile(path string, moduleName string, parentNode *graph.Node) *graph.Node {
-
 	fset := token.NewFileSet()
 	f, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
 	if err != nil {
