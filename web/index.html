@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Big Picture</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="/go.js"></script>
+</head>
+<body>
+
+<div id="graph-div"></div>
+
+
+<script>
+    var Graph = new go.Diagram("graph-div", {
+        "undoManager.isEnabled": true,
+        layout: new go.TreeLayout({angle: 90, layerSpacing: 35})
+    });
+
+    Graph.nodeTemplate = new go.Node("Horizontal", {background: "#44CCFF"}).add(
+        new go.TextBlock("Default Text", {
+            margin: 12,
+            stroke: "white",
+            font: "bold 16px sans-serif",
+        }).bind("text", "name")
+    );
+
+    Graph.model.linkDataArray = [
+        {from: "internal/browser/browser.go", to: "internal/graph"},
+        {from: "Beta", to: "Gamma"}
+    ];
+
+    var data = fetch("/graph").then(function (response) {
+        return response.json();
+    }).then(function (data) {
+        Graph.model.nodeDataArray = Object.keys(data.nodes).map(function (nodePath) {
+           return {
+               key: data.nodes[nodePath].path,
+               name: data.nodes[nodePath].path,
+               isGroup: data.nodes[nodePath].type === 1,
+               group: data.nodes[nodePath].parent
+           }
+        });
+
+        Graph.model.linkDataArray = data.links.map(function (link) {
+            return {
+                from: link.from.path,
+                to: link.to.path
+            }
+        });
+    });
+
+</script>
+</body>
+</html>
