@@ -30,7 +30,9 @@ func NewTree(root *Node) *Tree {
 func (t *Tree) GenerateLinks() {
 	for _, node := range t.Nodes {
 		for _, imported := range node.importRaw {
-			t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
+			if node != nil && t.Nodes[imported] != nil {
+				t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
+			}
 
 			//for node.Parent != "" && node.Parent != t.Root.Path {
 			//	node = t.Nodes[node.Parent]

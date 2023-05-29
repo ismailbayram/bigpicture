@@ -5,6 +5,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/browser"
+	"github.com/ismailbayram/bigpicture/internal/config"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"net/http"
 	"os"
@@ -32,11 +33,13 @@ func rootPath(h http.Handler) http.Handler {
 }
 
 func main() {
+	cfg := config.Init()
+
 	moduleName := getModuleName()
 	rootNode := graph.NewNode(moduleName, ".", graph.Dir, nil)
 	tree := graph.NewTree(rootNode)
 
-	if err := browser.Browse(".", moduleName, rootNode, tree); err != nil {
+	if err := browser.Browse(cfg, ".", moduleName, rootNode, tree); err != nil {
 		panic(err)
 	}
 	tree.GenerateLinks()

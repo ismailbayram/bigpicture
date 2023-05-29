@@ -2,6 +2,7 @@ package browser
 
 import (
 	"fmt"
+	"github.com/ismailbayram/bigpicture/internal/config"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"go/parser"
 	"go/token"
@@ -9,7 +10,7 @@ import (
 	"strings"
 )
 
-func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *graph.Tree) error {
+func Browse(cfg *config.Configuration, parentPath string, moduleName string, parentNode *graph.Node, tree *graph.Tree) error {
 	entries, err := os.ReadDir(parentPath)
 
 	if err != nil {
@@ -19,11 +20,14 @@ func Browse(parentPath string, moduleName string, parentNode *graph.Node, tree *
 	for _, e := range entries {
 		fName := e.Name()
 		path := fmt.Sprintf("%s/%s", parentPath, fName)
+		if cfg.IsIgnored(path) {
+			continue
+		}
 
 		if e.IsDir() && !strings.Contains(fName, ".") {
 			node := graph.NewNode(fName, path, graph.Dir, nil)
 			tree.Nodes[node.Path] = node
-			if err := Browse(path, moduleName, node, tree); err != nil {
+			if err := Browse(cfg, path, moduleName, node, tree); err != nil {
 				return err
 			}
 		} else if strings.HasSuffix(fName, ".go") {
