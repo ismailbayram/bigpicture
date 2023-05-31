@@ -70,6 +70,7 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 		Type:        _type,
 		importRaw:   importRaw,
 	}
+	// TODO: remove this and accept parent as parameter
 	if strings.Contains(path, "/") {
 		dirs := strings.Split(path, "/")
 		node.Parent = strings.Join(dirs[:len(dirs)-1], "/")

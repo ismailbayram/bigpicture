@@ -2,21 +2,32 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
+	"io"
 	"os"
 	"strings"
 )
 
+const (
+	FileName = ".bigpicture.json"
+)
+
 type Configuration struct {
 	IgnoredPaths []string `json:"ignore"`
+	Validators   []string `json:"validators"`
+	Port         int      `json:"port"`
 }
 
 func Init() *Configuration {
 	file := checkFileExistAndCreate()
 	defer file.Close()
 
-	cfg := &Configuration{}
+	cfg := &Configuration{
+		Port: 44525,
+	}
+
 	err := json.NewDecoder(file).Decode(&cfg)
-	if err != nil {
+	if err != nil && !errors.Is(err, io.EOF) {
 		panic(err)
 	}
 
@@ -34,17 +45,25 @@ func (cfg *Configuration) IsIgnored(entryPath string) bool {
 }
 
 func checkFileExistAndCreate() *os.File {
-	_, err := os.Stat(".bigpicture.json")
+	_, err := os.Stat(FileName)
 	if err != nil {
-		f, err := os.Create(".bigpicture.json")
-		if err != nil {
-			panic(err)
-		}
-		f.Write([]byte(`{}`))
-		return f
+		return createFile(err)
 	}
 
-	f, err := os.Open(".bigpicture.json")
+	f, err := os.Open(FileName)
+	if err != nil {
+		panic(err)
+	}
+	return f
+}
+
+func createFile(err error) *os.File {
+	if !errors.Is(err, os.ErrNotExist) {
+		panic(err)
+	}
+
+	f, err := os.Create(FileName)
+	f.Write([]byte(`{}`))
 	if err != nil {
 		panic(err)
 	}
