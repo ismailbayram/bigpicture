@@ -1,5 +1,28 @@
 {
-  "ignore": [
-    "web"
-  ]
+    "ignore": [
+        "web"
+    ],
+    "validators": [
+        {
+            "type": "import_block",
+            "args": {
+                "from": "internal/config",
+                "to": "internal/graph"
+            }
+        },
+        {
+            "type": "import_block",
+            "args": {
+                "from": "internal/config",
+                "to": "internal/browser"
+            }
+        },
+        {
+            "type": "instability",
+            "args": {
+                "module": "internal",
+                "max": 0.1
+            }
+        }
+    ]
 }

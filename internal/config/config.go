@@ -5,7 +5,6 @@ import (
 	"errors"
 	"io"
 	"os"
-	"strings"
 )
 
 const (
@@ -14,7 +13,7 @@ const (
 
 type Configuration struct {
 	IgnoredPaths []string `json:"ignore"`
-	Validators   []string `json:"validators"`
+	Validators   []any    `json:"validators"`
 	Port         int      `json:"port"`
 }
 
@@ -32,16 +31,6 @@ func Init() *Configuration {
 	}
 
 	return cfg
-}
-
-func (cfg *Configuration) IsIgnored(entryPath string) bool {
-	entryPath = entryPath[2:]
-	for _, path := range cfg.IgnoredPaths {
-		if strings.HasPrefix(entryPath, path) {
-			return true
-		}
-	}
-	return false
 }
 
 func checkFileExistAndCreate() *os.File {

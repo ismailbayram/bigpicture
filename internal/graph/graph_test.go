@@ -6,16 +6,15 @@ import (
 )
 
 func TestNewTree(t *testing.T) {
-	root := NewNode("package", "path/dir", Dir, nil)
-	tree := NewTree(root)
-	assert.Equal(t, root, tree.Root)
+	tree := NewTree("moduleName")
+	assert.Equal(t, "moduleName", tree.Root.PackageName)
 	assert.Equal(t, 1, len(tree.Nodes))
-	assert.Equal(t, root, tree.Nodes["path/dir"])
+	assert.Equal(t, tree.Root, tree.Nodes["."])
 }
 
 func TestTree_GenerateLinks(t *testing.T) {
-	root := NewNode("main", "path", Dir, []string{"path/node1", "path/node2"})
-	tree := NewTree(root)
+	tree := NewTree("moduleName")
+	tree.Root.importRaw = []string{"path/node1", "path/node2"}
 
 	node1 := NewNode("package1", "path/node1", Dir, []string{})
 	tree.Nodes["path/node1"] = node1
@@ -30,10 +29,10 @@ func TestTree_GenerateLinks(t *testing.T) {
 
 	assert.Equal(t, 4, len(tree.Links))
 
-	assert.Equal(t, root, tree.Links[0].From)
+	assert.Equal(t, tree.Root, tree.Links[0].From)
 	assert.Equal(t, node1, tree.Links[0].To)
 
-	assert.Equal(t, root, tree.Links[1].From)
+	assert.Equal(t, tree.Root, tree.Links[1].From)
 	assert.Equal(t, node2, tree.Links[1].To)
 
 	assert.Equal(t, node1_file, tree.Links[2].From)

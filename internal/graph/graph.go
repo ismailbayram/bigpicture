@@ -18,7 +18,9 @@ type Tree struct {
 	Links []*Link          `json:"links"`
 }
 
-func NewTree(root *Node) *Tree {
+func NewTree(moduleName string) *Tree {
+	root := NewNode(moduleName, ".", Dir, nil)
+
 	tree := &Tree{
 		Root:  root,
 		Nodes: make(map[string]*Node),
