@@ -33,13 +33,13 @@ func (t *Tree) GenerateLinks() {
 	for _, node := range t.Nodes {
 		for _, imported := range node.ImportRaw {
 			if node != nil && t.Nodes[imported] != nil {
-				t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
+				t.Links = append(t.Links, NewLink(node, t.Nodes[imported], true))
 			}
 
-			//for node.Parent != "" && node.Parent != t.Root.Path {
-			//	node = t.Nodes[node.Parent]
-			//	t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
-			//}
+			for node.Parent != "" && node.Parent != t.Root.Path {
+				node = t.Nodes[node.Parent]
+				t.Links = append(t.Links, NewLink(node, t.Nodes[imported], false))
+			}
 		}
 	}
 }
@@ -92,24 +92,28 @@ func (n *Node) ToJSON() string {
 }
 
 type Link struct {
-	From *Node `json:"from"`
-	To   *Node `json:"to"`
+	From      *Node `json:"from"`
+	To        *Node `json:"to"`
+	IsVisible bool  `json:"is_visible"`
 }
 
-func NewLink(from *Node, to *Node) *Link {
+func NewLink(from *Node, to *Node, isVisible bool) *Link {
 	return &Link{
-		From: from,
-		To:   to,
+		From:      from,
+		To:        to,
+		IsVisible: isVisible,
 	}
 }
 
 func (l *Link) ToJSON() string {
 	data, err := json.Marshal(struct {
-		From string `json:"from"`
-		To   string `json:"to"`
+		From      string `json:"from"`
+		To        string `json:"to"`
+		IsVisible bool   `json:"is_visible"`
 	}{
-		From: l.From.Path,
-		To:   l.To.Path,
+		From:      l.From.Path,
+		To:        l.To.Path,
+		IsVisible: l.IsVisible,
 	})
 	if err != nil {
 		panic(err)

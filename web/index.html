@@ -45,7 +45,8 @@
            }
         });
 
-        Graph.model.linkDataArray = data.links.map(function (link) {
+        Graph.model.linkDataArray = data.links.filter(link => link.is_visible)
+            .map(function (link) {
             return {
                 from: link.from.path,
                 to: link.to.path

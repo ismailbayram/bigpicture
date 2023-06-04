@@ -7,7 +7,7 @@
             "type": "import_block",
             "args": {
                 "from": "internal/config",
-                "to": "internal/graph"
+                "to": "*"
             }
         },
         {
