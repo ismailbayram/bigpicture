@@ -86,13 +86,3 @@ func (b *GoBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
 
 	return node
 }
-
-//func TestConfiguration_IsIgnored(t *testing.T) {
-//	defer os.Remove(FileName)
-//
-//	cfg := Init()
-//	cfg.IgnoredPaths = []string{"vendor", "web"}
-//
-//	assert.True(t, cfg.IsIgnored("./web/something"))
-//	assert.False(t, cfg.IsIgnored("./cmd"))
-//}

@@ -31,7 +31,7 @@ func NewTree(moduleName string) *Tree {
 
 func (t *Tree) GenerateLinks() {
 	for _, node := range t.Nodes {
-		for _, imported := range node.importRaw {
+		for _, imported := range node.ImportRaw {
 			if node != nil && t.Nodes[imported] != nil {
 				t.Links = append(t.Links, NewLink(node, t.Nodes[imported]))
 			}
@@ -57,8 +57,7 @@ type Node struct {
 	Path        string `json:"path"`
 	Parent      string `json:"parent"`
 	Type        Type   `json:"type"`
-
-	importRaw []string
+	ImportRaw   []string
 }
 
 func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {
@@ -70,7 +69,7 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 		PackageName: packageName,
 		Path:        path,
 		Type:        _type,
-		importRaw:   importRaw,
+		ImportRaw:   importRaw,
 	}
 	// TODO: remove this and accept parent as parameter
 	if strings.Contains(path, "/") {

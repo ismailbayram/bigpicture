@@ -14,7 +14,7 @@ func TestNewTree(t *testing.T) {
 
 func TestTree_GenerateLinks(t *testing.T) {
 	tree := NewTree("moduleName")
-	tree.Root.importRaw = []string{"path/node1", "path/node2"}
+	tree.Root.ImportRaw = []string{"path/node1", "path/node2"}
 
 	node1 := NewNode("package1", "path/node1", Dir, []string{})
 	tree.Nodes["path/node1"] = node1
@@ -55,7 +55,7 @@ func TestNewNode(t *testing.T) {
 	node = NewNode("package", "./path/dir", Dir, []string{"import1", "import2"})
 	assert.Equal(t, "package", node.PackageName)
 	assert.Equal(t, "/path/dir", node.Path)
-	assert.Equal(t, 2, len(node.importRaw))
+	assert.Equal(t, 2, len(node.ImportRaw))
 }
 
 func TestNode_ToJSON(t *testing.T) {
