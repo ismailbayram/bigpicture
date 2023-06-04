@@ -3,10 +3,13 @@ package browser
 import (
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
 func TestGetModuleName(t *testing.T) {
+	os.Chdir("../..")
+
 	browser := &GoBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,

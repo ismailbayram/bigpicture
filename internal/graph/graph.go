@@ -53,11 +53,11 @@ func (t *Tree) ToJSON() string {
 }
 
 type Node struct {
-	PackageName string `json:"package_name"`
-	Path        string `json:"path"`
-	Parent      string `json:"parent"`
-	Type        Type   `json:"type"`
-	ImportRaw   []string
+	PackageName string   `json:"package_name"`
+	Path        string   `json:"path"`
+	Parent      string   `json:"parent"`
+	Type        Type     `json:"type"`
+	ImportRaw   []string `json:"-"`
 }
 
 func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {
