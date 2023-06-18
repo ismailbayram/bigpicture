@@ -4,17 +4,17 @@
     ],
     "validators": [
         {
-            "type": "import_block",
+            "type": "no_import",
             "args": {
-                "from": "internal/config",
+                "from": "/internal/config",
                 "to": "*"
             }
         },
         {
-            "type": "import_block",
+            "type": "no_import",
             "args": {
-                "from": "internal/config",
-                "to": "internal/browser"
+                "from": "/internal/config",
+                "to": "/internal/browser"
             }
         },
         {

@@ -11,10 +11,15 @@ const (
 	FileName = ".bigpicture.json"
 )
 
+type Validator struct {
+	Type string         `json:"type"`
+	Args map[string]any `json:"args"`
+}
+
 type Configuration struct {
-	IgnoredPaths []string `json:"ignore"`
-	Validators   []any    `json:"validators"`
-	Port         int      `json:"port"`
+	IgnoredPaths []string    `json:"ignore"`
+	Validators   []Validator `json:"validators"`
+	Port         int         `json:"port"`
 }
 
 func Init() *Configuration {
