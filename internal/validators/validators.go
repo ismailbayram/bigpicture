@@ -91,6 +91,15 @@ func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValid
 }
 
 func (v *NoImportValidator) Validate() error {
+	for _, link := range v.tree.Links {
+		if strings.HasPrefix(link.From.Path, v.from) && strings.HasPrefix(link.To.Path, v.to) {
+			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
+		}
+		if v.from == "*" && strings.HasPrefix(link.To.Path, v.to) || v.to == "*" && strings.HasPrefix(link.From.Path, v.from) {
+			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
+		}
+	}
+
 	return nil
 }
 
