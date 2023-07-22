@@ -13,8 +13,8 @@
         {
             "type": "no_import",
             "args": {
-                "from": "/internal/config",
-                "to": "/internal/browser"
+                "from": "/internal/server",
+                "to": "*"
             }
         },
         {
@@ -27,7 +27,7 @@
         {
             "type": "instability",
             "args": {
-                "module": "internal",
+                "module": "/internal",
                 "max": 0.1
             }
         }

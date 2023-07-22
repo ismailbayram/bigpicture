@@ -14,40 +14,31 @@ func TestNewTree(t *testing.T) {
 
 func TestTree_GenerateLinks(t *testing.T) {
 	tree := NewTree("moduleName")
-	tree.Root.ImportRaw = []string{"node1", "node2"}
 
-	node1 := NewNode("package1", "node1", Dir, []string{})
-	tree.Nodes["node1"] = node1
-	node1_file := NewNode("package1", "node1/file", File, []string{"node2"})
-	tree.Nodes["node1/file"] = node1_file
-	node2 := NewNode("package2", "node2", Dir, []string{"node3"})
-	tree.Nodes["node2"] = node2
-	node3 := NewNode("package3", "node3", Dir, []string{})
-	tree.Nodes["node3"] = node3
+	node1 := NewNode("package1", "/node1", Dir, []string{})
+	tree.Nodes["/node1"] = node1
+	node1_file := NewNode("package1", "/node1/file", File, []string{"/node2"})
+	tree.Nodes["/node1/file"] = node1_file
+	node2 := NewNode("package2", "/node2", Dir, []string{"/node3"})
+	tree.Nodes["/node2"] = node2
+	node3 := NewNode("package3", "/node3", Dir, []string{})
+	tree.Nodes["/node3"] = node3
 
 	tree.GenerateLinks()
 
-	assert.Equal(t, 5, len(tree.Links))
+	assert.Equal(t, 3, len(tree.Links))
 
-	assert.Equal(t, tree.Root, tree.Links[0].From)
-	assert.Equal(t, node1, tree.Links[0].To)
+	assert.Equal(t, node1_file, tree.Links[0].From)
+	assert.Equal(t, node2, tree.Links[0].To)
 	assert.True(t, tree.Links[0].IsVisible)
 
-	assert.Equal(t, tree.Root, tree.Links[1].From)
+	assert.Equal(t, node1, tree.Links[1].From)
 	assert.Equal(t, node2, tree.Links[1].To)
-	assert.True(t, tree.Links[1].IsVisible)
+	assert.False(t, tree.Links[1].IsVisible)
 
-	assert.Equal(t, node1_file, tree.Links[2].From)
-	assert.Equal(t, node2, tree.Links[2].To)
+	assert.Equal(t, node2, tree.Links[2].From)
+	assert.Equal(t, node3, tree.Links[2].To)
 	assert.True(t, tree.Links[2].IsVisible)
-
-	assert.Equal(t, node1, tree.Links[3].From)
-	assert.Equal(t, node2, tree.Links[3].To)
-	assert.False(t, tree.Links[3].IsVisible)
-
-	assert.Equal(t, node2, tree.Links[4].From)
-	assert.Equal(t, node3, tree.Links[4].To)
-	assert.True(t, tree.Links[4].IsVisible)
 }
 
 func TestNewNode(t *testing.T) {
@@ -60,7 +51,11 @@ func TestNewNode(t *testing.T) {
 	node = NewNode("package", "./path/dir", Dir, []string{"import1", "import2"})
 	assert.Equal(t, "package", node.PackageName)
 	assert.Equal(t, "/path/dir", node.Path)
+	assert.Equal(t, node.Parent, "/path")
 	assert.Equal(t, 2, len(node.ImportRaw))
+
+	node = NewNode("package", "/path", Dir, []string{})
+	assert.Equal(t, ".", node.Parent)
 }
 
 func TestNode_ToJSON(t *testing.T) {

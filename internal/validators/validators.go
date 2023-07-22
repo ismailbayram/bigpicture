@@ -45,6 +45,12 @@ func validateArg(args map[string]any, arg string, argType string) (any, error) {
 			return nil, errors.New(fmt.Sprintf("'%s' must be an integer", arg))
 		}
 		return int(val.(float64)), nil
+	case "float":
+		_, ok := val.(float64)
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("'%s' must be a float", arg))
+		}
+		return val.(float64), nil
 	}
 
 	return val, nil

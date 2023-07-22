@@ -54,30 +54,30 @@ func TestNewNoImportValidator(t *testing.T) {
 
 func TestNoImportValidator_Validate(t *testing.T) {
 	tree := graph.NewTree("root")
-	tree.Nodes["server"] = graph.NewNode("server", "server", graph.Dir, []string{
-		"browser/go",
+	tree.Nodes["/server"] = graph.NewNode("server", "/server", graph.Dir, []string{
+		"/browser/go",
 	})
-	tree.Nodes["config"] = graph.NewNode("config", "config", graph.Dir, []string{})
-	tree.Nodes["config/subconfig"] = graph.NewNode("subconfig", "config/subconfig", graph.Dir, []string{})
-	tree.Nodes["browser"] = graph.NewNode("browser", "browser", graph.Dir, []string{
-		"config/subconfig",
+	tree.Nodes["/config"] = graph.NewNode("config", "/config", graph.Dir, []string{})
+	tree.Nodes["/config/subconfig"] = graph.NewNode("subconfig", "/config/subconfig", graph.Dir, []string{})
+	tree.Nodes["/browser"] = graph.NewNode("browser", "/browser", graph.Dir, []string{
+		"/config/subconfig",
 	})
-	tree.Nodes["browser/go"] = graph.NewNode("go", "browser/go", graph.Dir, []string{
-		"config/subconfig",
+	tree.Nodes["/browser/go"] = graph.NewNode("go", "/browser/go", graph.Dir, []string{
+		"/config/subconfig",
 	})
 	tree.GenerateLinks()
 
-	validator, err := NewValidator("no_import", map[string]any{"from": "server", "to": "config/subconfig"}, tree)
+	validator, err := NewValidator("no_import", map[string]any{"from": "/server", "to": "/config/subconfig"}, tree)
 	assert.Nil(t, err)
 	assert.Nil(t, validator.Validate())
 
-	validator, err = NewValidator("no_import", map[string]any{"from": "browser", "to": "config"}, tree)
+	validator, err = NewValidator("no_import", map[string]any{"from": "/browser", "to": "/config"}, tree)
 	assert.Nil(t, err)
 	assert.NotNil(t, validator.Validate())
-	assert.Equal(t, "'browser' cannot import 'config/subconfig'", validator.Validate().Error())
+	assert.Equal(t, "'/browser' cannot import '/config/subconfig'", validator.Validate().Error())
 
-	validator, err = NewValidator("no_import", map[string]any{"from": "*", "to": "browser"}, tree)
+	validator, err = NewValidator("no_import", map[string]any{"from": "*", "to": "/browser"}, tree)
 	assert.Nil(t, err)
 	assert.NotNil(t, validator.Validate())
-	assert.Equal(t, "'server' cannot import 'browser/go'", validator.Validate().Error())
+	assert.Equal(t, "'/server' cannot import '/browser/go'", validator.Validate().Error())
 }
