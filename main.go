@@ -42,6 +42,7 @@ func main() {
 	brow := browser.NewBrowser(browser.LangGo, bp.tree, bp.cfg.IgnoredPaths)
 	brow.Browse(".")
 	bp.tree.GenerateLinks()
+	bp.tree.CalculateInstability()
 
 	if os.Args[1] == "server" {
 		server.RunServer(staticFiles, bp.cfg.Port, bp.tree.ToJSON())

@@ -2,6 +2,7 @@ package graph
 
 import (
 	"encoding/json"
+	"math"
 	"strings"
 )
 
@@ -44,6 +45,27 @@ func (t *Tree) GenerateLinks() {
 	}
 }
 
+func (t *Tree) CalculateInstability() {
+	for _, node := range t.Nodes {
+		importCount := 0   // from node to other modules
+		importedCount := 0 // from other modules to node
+		for _, link := range t.Links {
+			if link.From.Path == node.Path && link.To.Parent == node.Parent {
+				importCount += 1
+			}
+			if strings.HasPrefix(link.To.Path, node.Path) && link.From.Parent == node.Parent {
+				importedCount += 1
+			}
+		}
+
+		instability := float64(importCount) / float64(importedCount+importCount)
+		if !math.IsNaN(instability) {
+			node.Instability = new(float64)
+			*node.Instability = instability
+		}
+	}
+}
+
 func (t *Tree) ToJSON() string {
 	data, err := json.Marshal(t)
 	if err != nil {
@@ -59,6 +81,7 @@ type Node struct {
 	Type        Type     `json:"type"`
 	ImportRaw   []string `json:"-"`
 	LineCount   int      `json:"line_count"`
+	Instability *float64 `json:"instability"`
 }
 
 func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {
@@ -71,6 +94,7 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 		Path:        path,
 		Type:        _type,
 		ImportRaw:   importRaw,
+		Instability: nil,
 	}
 	// TODO: remove this and accept parent as parameter
 	if strings.Contains(path, "/") {
@@ -85,7 +109,15 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 }
 
 func (n *Node) ToJSON() string {
-	data, err := json.Marshal(n)
+	data, err := json.Marshal(&struct {
+		Node
+		Instability *float64 `json:"instability"`
+	}{
+		Node:        *n,
+		Instability: nil,
+	})
+
+	//data, err := json.Marshal(n)
 	if err != nil {
 		panic(err)
 	}

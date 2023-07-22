@@ -46,31 +46,15 @@ func NewInstabilityValidator(args map[string]any, tree *graph.Tree) (*Instabilit
 }
 
 func (v *InstabilityValidator) Validate() error {
-	for _, node := range v.tree.Nodes {
-		if node.Parent != v.module {
-			continue
-		}
+	node := v.tree.Nodes[v.module]
 
-		importCount := 0   // from node to other modules
-		importedCount := 0 // from other modules to node
-		for _, link := range v.tree.Links {
-			if link.From.Path == node.Path && link.To.Parent == node.Parent {
-				importCount += 1
-			}
-			if strings.HasPrefix(link.To.Path, node.Path) && link.From.Parent == node.Parent {
-				importedCount += 1
-			}
-		}
-
-		instability := float64(importCount) / float64(importedCount+importCount)
-		if instability > v.max {
-			return errors.New(fmt.Sprintf(
-				"instability of %s is %.2f, but should be less than %.2f",
-				node.Path,
-				instability,
-				v.max,
-			))
-		}
+	if node.Instability != nil && *node.Instability > v.max {
+		return errors.New(fmt.Sprintf(
+			"instability of %s is %.2f, but should be less than %.2f",
+			node.Path,
+			*node.Instability,
+			v.max,
+		))
 	}
 	return nil
 }

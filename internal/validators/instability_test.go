@@ -53,13 +53,14 @@ func TestInstabilityValidator_Validate(t *testing.T) {
 	tree.Nodes["/graph"] = graph.NewNode("graph", "/graph", graph.Dir, []string{})
 	tree.Nodes["/graph/graph.go"] = graph.NewNode("graph", "/graph/graph.go", graph.Dir, []string{})
 	tree.GenerateLinks()
+	tree.CalculateInstability()
 
-	args := map[string]any{"module": ".", "max": 0.25}
+	args := map[string]any{"module": "/browser", "max": 0.25}
 	validator, _ := NewInstabilityValidator(args, tree)
 	err := validator.Validate()
 	assert.Equal(t, "instability of /browser is 0.50, but should be less than 0.25", err.Error())
 
-	args = map[string]any{"module": ".", "max": 0.50}
+	args = map[string]any{"module": "/browser", "max": 0.50}
 	validator, _ = NewInstabilityValidator(args, tree)
 	err = validator.Validate()
 	assert.Nil(t, err)

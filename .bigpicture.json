@@ -27,7 +27,7 @@
         {
             "type": "instability",
             "args": {
-                "module": "/internal",
+                "module": "/internal/graph",
                 "max": 0.1
             }
         }
