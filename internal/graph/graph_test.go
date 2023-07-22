@@ -65,7 +65,7 @@ func TestNewNode(t *testing.T) {
 
 func TestNode_ToJSON(t *testing.T) {
 	node := NewNode("package", "path/dir", Dir, nil)
-	assert.Equal(t, "{\"package_name\":\"package\",\"path\":\"path/dir\",\"parent\":\"path\",\"type\":1}", node.ToJSON())
+	assert.Equal(t, `{"package_name":"package","path":"path/dir","parent":"path","type":1,"line_count":0}`, node.ToJSON())
 }
 
 func TestNewLink(t *testing.T) {

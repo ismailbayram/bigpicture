@@ -66,8 +66,14 @@ func (b *GoBrowser) browse(parentPath string, parentNode *graph.Node) {
 }
 
 func (b *GoBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
+	file, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	fileContent := string(file)
+
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, path, nil, parser.ImportsOnly)
+	f, err := parser.ParseFile(fset, "", fileContent, parser.ImportsOnly)
 	if err != nil {
 		panic(err)
 	}
@@ -83,6 +89,7 @@ func (b *GoBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
 	node := graph.NewNode(f.Name.Name, path, graph.File, imports)
 	parentNode.PackageName = f.Name.Name
 	node.PackageName = f.Name.Name
+	node.LineCount = strings.Count(fileContent, "\n")
 
 	return node
 }

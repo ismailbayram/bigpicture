@@ -18,6 +18,13 @@
             }
         },
         {
+            "type": "line_count",
+            "args": {
+                "module": "/internal/browser",
+                "max": 100
+            }
+        },
+        {
             "type": "instability",
             "args": {
                 "module": "internal",

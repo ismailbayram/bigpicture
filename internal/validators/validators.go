@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
-	"strings"
 )
 
 type Validator interface {
@@ -17,6 +16,8 @@ func NewValidator(t string, args map[string]any, tree *graph.Tree) (Validator, e
 		return NewNoImportValidator(args, tree)
 	case "instability":
 		return NewInstabilityValidator(args, tree)
+	case "line_count":
+		return NewLineCountValidator(args, tree)
 	default:
 		return nil, errors.New(fmt.Sprintf("unknown validator type: %s", t))
 	}
@@ -38,7 +39,14 @@ func validateArg(args map[string]any, arg string, argType string) (any, error) {
 			return nil, errors.New(fmt.Sprintf("'%s' cannot be empty", arg))
 		}
 		return val, nil
+	case "int":
+		_, ok := val.(float64)
+		if !ok {
+			return nil, errors.New(fmt.Sprintf("'%s' must be an integer", arg))
+		}
+		return int(val.(float64)), nil
 	}
+
 	return val, nil
 }
 
@@ -46,73 +54,5 @@ func validatePath(path string, tree *graph.Tree) error {
 	if _, ok := tree.Nodes[path]; !ok && path != "*" {
 		return errors.New(fmt.Sprintf("'%s' is not a valid module. Path should start with /", path))
 	}
-	return nil
-}
-
-type NoImportValidator struct {
-	from string
-	to   string
-	tree *graph.Tree
-}
-
-func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValidator, error) {
-	_from, err := validateArg(args, "from", "string")
-	if err != nil {
-		return nil, err
-	}
-	_to, err := validateArg(args, "to", "string")
-	if err != nil {
-		return nil, err
-	}
-
-	from := _from.(string)
-	to := _to.(string)
-
-	if len(from) > 1 && strings.HasSuffix(from, "/*") {
-		from = from[:len(from)-2]
-	}
-
-	if len(to) > 1 && strings.HasSuffix(to, "/*") {
-		to = to[:len(to)-2]
-	}
-	if err := validatePath(from, tree); err != nil {
-		return nil, err
-	}
-
-	if err := validatePath(to, tree); err != nil {
-		return nil, err
-	}
-
-	return &NoImportValidator{
-		from: from,
-		to:   to,
-		tree: tree,
-	}, nil
-}
-
-func (v *NoImportValidator) Validate() error {
-	for _, link := range v.tree.Links {
-		if strings.HasPrefix(link.From.Path, v.from) && strings.HasPrefix(link.To.Path, v.to) {
-			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
-		}
-		if v.from == "*" && strings.HasPrefix(link.To.Path, v.to) || v.to == "*" && strings.HasPrefix(link.From.Path, v.from) {
-			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
-		}
-	}
-
-	return nil
-}
-
-type InstabilityValidator struct {
-	module string
-	max    float32
-	tree   *graph.Tree
-}
-
-func NewInstabilityValidator(args map[string]any, tree *graph.Tree) (*InstabilityValidator, error) {
-	return nil, nil
-}
-
-func (v *InstabilityValidator) Validate() error {
 	return nil
 }

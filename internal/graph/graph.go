@@ -58,6 +58,7 @@ type Node struct {
 	Parent      string   `json:"parent"`
 	Type        Type     `json:"type"`
 	ImportRaw   []string `json:"-"`
+	LineCount   int      `json:"line_count"`
 }
 
 func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {
