@@ -18,6 +18,8 @@ func NewValidator(t string, args map[string]any, tree *graph.Tree) (Validator, e
 		return NewInstabilityValidator(args, tree)
 	case "line_count":
 		return NewLineCountValidator(args, tree)
+	case "function":
+		return NewFunctionValidator(args, tree)
 	default:
 		return nil, errors.New(fmt.Sprintf("unknown validator type: %s", t))
 	}

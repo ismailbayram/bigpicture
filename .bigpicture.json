@@ -21,7 +21,7 @@
             "type": "line_count",
             "args": {
                 "module": "/internal/browser",
-                "max": 100
+                "max": 200
             }
         },
         {
@@ -29,6 +29,13 @@
             "args": {
                 "module": "/internal/graph",
                 "max": 0.1
+            }
+        },
+        {
+            "type": "function",
+            "args": {
+                "module": "/internal",
+                "max_line_count": 50
             }
         }
     ]

@@ -23,6 +23,10 @@ func TestNewValidator(t *testing.T) {
 	assert.Nil(t, err)
 	assert.IsType(t, &LineCountValidator{}, validator)
 
+	validator, err = NewValidator("function", map[string]any{"module": "a", "max_line_count": float64(100)}, tree)
+	assert.Nil(t, err)
+	assert.IsType(t, &FunctionValidator{}, validator)
+
 	validator, err = NewValidator("unknown", map[string]any{}, tree)
 	assert.NotNil(t, err)
 	assert.Nil(t, validator)

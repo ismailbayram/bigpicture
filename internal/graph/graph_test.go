@@ -60,9 +60,10 @@ func TestNewNode(t *testing.T) {
 
 func TestNode_ToJSON(t *testing.T) {
 	node := NewNode("package", "path/dir", Dir, nil)
+	node.Functions = []Function{{Name: "test", LineCount: 10}}
 	assert.Equal(
 		t,
-		`{"package_name":"package","path":"path/dir","parent":"path","type":1,"line_count":0,"instability":null}`,
+		`{"package_name":"package","path":"path/dir","parent":"path","type":1,"line_count":0,"functions":[{"name":"test","line_count":10}],"instability":null}`,
 		node.ToJSON(),
 	)
 }

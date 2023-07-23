@@ -74,14 +74,20 @@ func (t *Tree) ToJSON() string {
 	return string(data)
 }
 
+type Function struct {
+	Name      string `json:"name"`
+	LineCount int    `json:"line_count"`
+}
+
 type Node struct {
-	PackageName string   `json:"package_name"`
-	Path        string   `json:"path"`
-	Parent      string   `json:"parent"`
-	Type        Type     `json:"type"`
-	ImportRaw   []string `json:"-"`
-	LineCount   int      `json:"line_count"`
-	Instability *float64 `json:"instability"`
+	PackageName string     `json:"package_name"`
+	Path        string     `json:"path"`
+	Parent      string     `json:"parent"`
+	Type        Type       `json:"type"`
+	ImportRaw   []string   `json:"-"`
+	LineCount   int        `json:"line_count"`
+	Instability *float64   `json:"instability"`
+	Functions   []Function `json:"functions"`
 }
 
 func NewNode(packageName string, path string, _type Type, importRaw []string) *Node {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
+	"go/ast"
 	"go/parser"
 	"go/token"
 	"os"
@@ -73,11 +74,12 @@ func (b *GoBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
 	fileContent := string(file)
 
 	fset := token.NewFileSet()
-	f, err := parser.ParseFile(fset, "", fileContent, parser.ImportsOnly)
+	f, err := parser.ParseFile(fset, "", fileContent, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}
 
+	// extract imports
 	var imports []string
 	for _, s := range f.Imports {
 		if strings.Contains(s.Path.Value, b.moduleName) {
@@ -86,7 +88,19 @@ func (b *GoBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
 		}
 	}
 
+	// extract functions
+	functions := make([]graph.Function, 0)
+	for _, decl := range f.Decls {
+		if fn, ok := decl.(*ast.FuncDecl); ok {
+			functions = append(functions, graph.Function{
+				Name:      fn.Name.Name,
+				LineCount: fset.Position(fn.End()).Line - fset.Position(fn.Pos()).Line - 2,
+			})
+		}
+	}
+
 	node := graph.NewNode(f.Name.Name, path, graph.File, imports)
+	node.Functions = functions
 	parentNode.PackageName = f.Name.Name
 	node.PackageName = f.Name.Name
 	node.LineCount = strings.Count(fileContent, "\n")
