@@ -28,9 +28,11 @@ func NewLineCountValidator(args map[string]any, tree *graph.Tree) (*LineCountVal
 		validatorArgs.Module = validatorArgs.Module[:len(validatorArgs.Module)-2]
 	}
 
-	if err := validatePath(validatorArgs.Module, tree); err != nil {
+	module, err := validatePath(validatorArgs.Module, tree)
+	if err != nil {
 		return nil, err
 	}
+	validatorArgs.Module = module
 
 	return &LineCountValidator{
 		args: validatorArgs,

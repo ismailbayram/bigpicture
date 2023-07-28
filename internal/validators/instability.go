@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
-	"strings"
 )
 
 type InstabilityValidatorArgs struct {
@@ -23,13 +22,11 @@ func NewInstabilityValidator(args map[string]any, tree *graph.Tree) (*Instabilit
 		return nil, err
 	}
 
-	if len(validatorArgs.Module) > 1 && strings.HasSuffix(validatorArgs.Module, "/*") {
-		validatorArgs.Module = validatorArgs.Module[:len(validatorArgs.Module)-2]
-	}
-
-	if err := validatePath(validatorArgs.Module, tree); err != nil {
+	module, err := validatePath(validatorArgs.Module, tree)
+	if err != nil {
 		return nil, err
 	}
+	validatorArgs.Module = module
 
 	return &InstabilityValidator{
 		args: validatorArgs,

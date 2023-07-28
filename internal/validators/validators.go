@@ -71,44 +71,15 @@ func toSnakeCase(str string) string {
 	return strings.ToLower(snake)
 }
 
-func validateArg(args map[string]any, arg string, argType string, required bool) (any, error) {
-	val, ok := args[arg]
-	if !ok && required {
-		return nil, errors.New(fmt.Sprintf("'%s' is required", arg))
+func validatePath(path string, tree *graph.Tree) (string, error) {
+	if len(path) > 1 && strings.HasSuffix(path, "/*") {
+		path = path[:len(path)-2]
 	}
 
-	switch argType {
-	case "string":
-		_, ok := val.(string)
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("'%s' must be a string", arg))
-		}
-		if val == "" {
-			return nil, errors.New(fmt.Sprintf("'%s' cannot be empty", arg))
-		}
-		return val, nil
-	case "int":
-		_, ok := val.(float64)
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("'%s' must be an integer", arg))
-		}
-		return int(val.(float64)), nil
-	case "float":
-		_, ok := val.(float64)
-		if !ok {
-			return nil, errors.New(fmt.Sprintf("'%s' must be a float", arg))
-		}
-		return val.(float64), nil
-	}
-
-	return val, nil
-}
-
-func validatePath(path string, tree *graph.Tree) error {
 	if _, ok := tree.Nodes[path]; !ok && path != "*" {
-		return errors.New(fmt.Sprintf("'%s' is not a valid module. Path should start with /", path))
+		return "", errors.New(fmt.Sprintf("'%s' is not a valid module. Path should start with /", path))
 	}
-	return nil
+	return path, nil
 }
 
 func isIgnored(ignoreList []string, path string) bool {

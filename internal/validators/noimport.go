@@ -23,20 +23,17 @@ func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValid
 		return nil, err
 	}
 
-	if len(validatorArgs.From) > 1 && strings.HasSuffix(validatorArgs.From, "/*") {
-		validatorArgs.From = validatorArgs.From[:len(validatorArgs.From)-2]
-	}
-
-	if len(validatorArgs.To) > 1 && strings.HasSuffix(validatorArgs.To, "/*") {
-		validatorArgs.To = validatorArgs.To[:len(validatorArgs.To)-2]
-	}
-	if err := validatePath(validatorArgs.From, tree); err != nil {
+	from, err := validatePath(validatorArgs.From, tree)
+	if err != nil {
 		return nil, err
 	}
+	validatorArgs.From = from
 
-	if err := validatePath(validatorArgs.To, tree); err != nil {
+	to, err := validatePath(validatorArgs.To, tree)
+	if err != nil {
 		return nil, err
 	}
+	validatorArgs.To = to
 
 	return &NoImportValidator{
 		args: validatorArgs,
