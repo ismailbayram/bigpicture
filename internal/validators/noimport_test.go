@@ -13,19 +13,19 @@ func TestNewNoImportValidator(t *testing.T) {
 
 	args := map[string]any{}
 	_, err := NewNoImportValidator(args, nil)
-	assert.Equal(t, "'from' is required", err.Error())
+	assert.Equal(t, "from is required and must be string", err.Error())
 
 	args = map[string]any{"from": "a"}
 	_, err = NewNoImportValidator(args, nil)
-	assert.Equal(t, "'to' is required", err.Error())
+	assert.Equal(t, "to is required and must be string", err.Error())
 
 	args = map[string]any{"from": ""}
 	_, err = NewNoImportValidator(args, nil)
-	assert.Equal(t, "'from' cannot be empty", err.Error())
+	assert.Equal(t, "from is required and must be string", err.Error())
 
 	args = map[string]any{"from": "a", "to": ""}
 	_, err = NewNoImportValidator(args, nil)
-	assert.Equal(t, "'to' cannot be empty", err.Error())
+	assert.Equal(t, "to is required and must be string", err.Error())
 
 	args = map[string]any{"from": "wrong", "to": "b/*"}
 	validator, err := NewNoImportValidator(args, tree)
@@ -34,21 +34,21 @@ func TestNewNoImportValidator(t *testing.T) {
 	args = map[string]any{"from": "a", "to": "*"}
 	validator, err = NewNoImportValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.from)
-	assert.Equal(t, "*", validator.to)
+	assert.Equal(t, "a", validator.args.From)
+	assert.Equal(t, "*", validator.args.To)
 	assert.NotNil(t, validator.tree)
 
 	args = map[string]any{"from": "a/*", "to": "b/*"}
 	validator, err = NewNoImportValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.from)
-	assert.Equal(t, "b", validator.to)
+	assert.Equal(t, "a", validator.args.From)
+	assert.Equal(t, "b", validator.args.To)
 
 	args = map[string]any{"from": "a/*", "to": "b/*"}
 	validator, err = NewNoImportValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.from)
-	assert.Equal(t, "b", validator.to)
+	assert.Equal(t, "a", validator.args.From)
+	assert.Equal(t, "b", validator.args.To)
 
 }
 

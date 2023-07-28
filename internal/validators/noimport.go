@@ -7,53 +7,49 @@ import (
 	"strings"
 )
 
+type NoImportValidatorArgs struct {
+	From string `json:"from" validate:"required=true"`
+	To   string `json:"to" validate:"required=true"`
+}
+
 type NoImportValidator struct {
-	from string
-	to   string
+	args *NoImportValidatorArgs
 	tree *graph.Tree
 }
 
 func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValidator, error) {
-	_from, err := validateArg(args, "from", "string")
-	if err != nil {
-		return nil, err
-	}
-	_to, err := validateArg(args, "to", "string")
-	if err != nil {
+	validatorArgs := &NoImportValidatorArgs{}
+	if err := validateArgs(args, validatorArgs); err != nil {
 		return nil, err
 	}
 
-	from := _from.(string)
-	to := _to.(string)
-
-	if len(from) > 1 && strings.HasSuffix(from, "/*") {
-		from = from[:len(from)-2]
+	if len(validatorArgs.From) > 1 && strings.HasSuffix(validatorArgs.From, "/*") {
+		validatorArgs.From = validatorArgs.From[:len(validatorArgs.From)-2]
 	}
 
-	if len(to) > 1 && strings.HasSuffix(to, "/*") {
-		to = to[:len(to)-2]
+	if len(validatorArgs.To) > 1 && strings.HasSuffix(validatorArgs.To, "/*") {
+		validatorArgs.To = validatorArgs.To[:len(validatorArgs.To)-2]
 	}
-	if err := validatePath(from, tree); err != nil {
+	if err := validatePath(validatorArgs.From, tree); err != nil {
 		return nil, err
 	}
 
-	if err := validatePath(to, tree); err != nil {
+	if err := validatePath(validatorArgs.To, tree); err != nil {
 		return nil, err
 	}
 
 	return &NoImportValidator{
-		from: from,
-		to:   to,
+		args: validatorArgs,
 		tree: tree,
 	}, nil
 }
 
 func (v *NoImportValidator) Validate() error {
 	for _, link := range v.tree.Links {
-		if strings.HasPrefix(link.From.Path, v.from) && strings.HasPrefix(link.To.Path, v.to) {
+		if strings.HasPrefix(link.From.Path, v.args.From) && strings.HasPrefix(link.To.Path, v.args.To) {
 			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
 		}
-		if v.from == "*" && strings.HasPrefix(link.To.Path, v.to) || v.to == "*" && strings.HasPrefix(link.From.Path, v.from) {
+		if v.args.From == "*" && strings.HasPrefix(link.To.Path, v.args.To) || v.args.To == "*" && strings.HasPrefix(link.From.Path, v.args.From) {
 			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
 		}
 	}

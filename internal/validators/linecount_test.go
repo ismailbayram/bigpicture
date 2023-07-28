@@ -15,15 +15,15 @@ func TestNewLineCountValidator(t *testing.T) {
 
 	args := map[string]any{}
 	_, err := NewLineCountValidator(args, nil)
-	assert.Equal(t, "'module' is required", err.Error())
+	assert.Equal(t, "module is required and must be string", err.Error())
 
 	args = map[string]any{"module": "a"}
 	_, err = NewLineCountValidator(args, nil)
-	assert.Equal(t, "'max' is required", err.Error())
+	assert.Equal(t, "max is required and must be int", err.Error())
 
 	args = map[string]any{"module": "a", "max": "wrong"}
 	_, err = NewLineCountValidator(args, nil)
-	assert.Equal(t, "'max' must be an integer", err.Error())
+	assert.Equal(t, "max is required and must be int", err.Error())
 
 	args = map[string]any{"module": "wrong", "max": float64(100)}
 	_, err = NewLineCountValidator(args, tree)
@@ -32,8 +32,8 @@ func TestNewLineCountValidator(t *testing.T) {
 	args = map[string]any{"module": "a", "max": float64(100)}
 	validator, err := NewLineCountValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.module)
-	assert.Equal(t, 100, validator.max)
+	assert.Equal(t, "a", validator.args.Module)
+	assert.Equal(t, 100, validator.args.Max)
 }
 
 func TestLineCountValidator_Validate(t *testing.T) {

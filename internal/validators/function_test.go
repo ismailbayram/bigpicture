@@ -13,15 +13,15 @@ func TestNewFunctionValidator(t *testing.T) {
 
 	args := map[string]any{}
 	_, err := NewFunctionValidator(args, nil)
-	assert.Equal(t, "'module' is required", err.Error())
+	assert.Equal(t, "module is required and must be string", err.Error())
 
 	args = map[string]any{"module": "a"}
 	_, err = NewFunctionValidator(args, nil)
-	assert.Equal(t, "'max_line_count' is required", err.Error())
+	assert.Equal(t, "max_line_count is required and must be int", err.Error())
 
 	args = map[string]any{"module": "a", "max_line_count": "wrong"}
 	_, err = NewFunctionValidator(args, nil)
-	assert.Equal(t, "'max_line_count' must be an integer", err.Error())
+	assert.Equal(t, "max_line_count is required and must be int", err.Error())
 
 	args = map[string]any{"module": "wrong", "max_line_count": float64(100)}
 	_, err = NewFunctionValidator(args, tree)
@@ -30,8 +30,8 @@ func TestNewFunctionValidator(t *testing.T) {
 	args = map[string]any{"module": "a", "max_line_count": float64(100)}
 	validator, err := NewFunctionValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.module)
-	assert.Equal(t, 100, validator.maxLineCount)
+	assert.Equal(t, "a", validator.args.Module)
+	assert.Equal(t, 100, validator.args.MaxLineCount)
 }
 
 func TestFunctionValidator_Validate(t *testing.T) {

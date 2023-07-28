@@ -7,52 +7,52 @@ import (
 	"strings"
 )
 
+type FunctionValidatorArgs struct {
+	Module       string   `json:"module" validate:"required=true"`
+	MaxLineCount int      `json:"max_line_count" validate:"required=true,gte=1"`
+	Ignore       []string `json:"ignore"`
+}
+
 type FunctionValidator struct {
-	module       string
-	maxLineCount int
-	tree         *graph.Tree
+	args *FunctionValidatorArgs
+	tree *graph.Tree
 }
 
 func NewFunctionValidator(args map[string]any, tree *graph.Tree) (*FunctionValidator, error) {
-	_module, err := validateArg(args, "module", "string")
-	if err != nil {
+	validatorArgs := &FunctionValidatorArgs{}
+	if err := validateArgs(args, validatorArgs); err != nil {
 		return nil, err
 	}
 
-	_max, err := validateArg(args, "max_line_count", "int")
-	if err != nil {
-		return nil, err
+	if len(validatorArgs.Module) > 1 && strings.HasSuffix(validatorArgs.Module, "/*") {
+		validatorArgs.Module = validatorArgs.Module[:len(validatorArgs.Module)-2]
 	}
 
-	module := _module.(string)
-	max := _max.(int)
-
-	if len(module) > 1 && strings.HasSuffix(module, "/*") {
-		module = module[:len(module)-2]
-	}
-
-	if err := validatePath(module, tree); err != nil {
+	if err := validatePath(validatorArgs.Module, tree); err != nil {
 		return nil, err
 	}
 
 	return &FunctionValidator{
-		module:       module,
-		maxLineCount: max,
-		tree:         tree,
+		args: validatorArgs,
+		tree: tree,
 	}, nil
 }
 
 func (v *FunctionValidator) Validate() error {
 	for _, node := range v.tree.Nodes {
-		if strings.HasPrefix(node.Path, v.module) {
+		if isIgnored(v.args.Ignore, node.Path) {
+			continue
+		}
+
+		if strings.HasPrefix(node.Path, v.args.Module) {
 			for _, function := range node.Functions {
-				if function.LineCount > v.maxLineCount {
+				if function.LineCount > v.args.MaxLineCount {
 					return errors.New(fmt.Sprintf(
 						"Line count of function '%s' in '%s' is %d, but maximum allowed is %d",
 						function.Name,
 						node.Path,
 						function.LineCount,
-						v.maxLineCount,
+						v.args.MaxLineCount,
 					))
 				}
 			}

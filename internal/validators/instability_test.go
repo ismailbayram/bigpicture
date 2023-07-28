@@ -13,19 +13,19 @@ func TestNewInstabilityValidator(t *testing.T) {
 
 	args := map[string]any{}
 	_, err := NewInstabilityValidator(args, nil)
-	assert.Equal(t, "'module' is required", err.Error())
+	assert.Equal(t, "module is required and must be string", err.Error())
 
 	args = map[string]any{"module": "a"}
 	_, err = NewInstabilityValidator(args, nil)
-	assert.Equal(t, "'max' is required", err.Error())
+	assert.Equal(t, "max is required and must be float64", err.Error())
 
 	args = map[string]any{"module": "a", "max": "wrong"}
 	_, err = NewInstabilityValidator(args, nil)
-	assert.Equal(t, "'max' must be a float", err.Error())
+	assert.Equal(t, "max is required and must be float64", err.Error())
 
 	args = map[string]any{"module": "wrong", "max": float64(100)}
 	_, err = NewInstabilityValidator(args, tree)
-	assert.Equal(t, "'max' must be between 0 and 1", err.Error())
+	assert.Equal(t, "max cannot be longer than 1", err.Error())
 
 	args = map[string]any{"module": "wrong", "max": 0.2}
 	_, err = NewInstabilityValidator(args, tree)
@@ -34,8 +34,8 @@ func TestNewInstabilityValidator(t *testing.T) {
 	args = map[string]any{"module": "a", "max": 0.2}
 	validator, err := NewInstabilityValidator(args, tree)
 	assert.Nil(t, err)
-	assert.Equal(t, "a", validator.module)
-	assert.Equal(t, 0.2, validator.max)
+	assert.Equal(t, "a", validator.args.Module)
+	assert.Equal(t, 0.2, validator.args.Max)
 }
 
 func TestInstabilityValidator_Validate(t *testing.T) {
