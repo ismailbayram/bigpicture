@@ -35,7 +35,7 @@
             "type": "function",
             "args": {
                 "module": "/internal",
-                "max_line_count": 50
+                "max_line_count": 40
             }
         }
     ]
