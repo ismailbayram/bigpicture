@@ -51,6 +51,7 @@ func main() {
 		if err := bp.Validate(); err != nil {
 			fmt.Println("validation failed")
 			fmt.Println(err)
+			os.Exit(1)
 		}
 	case "help":
 		printHelp()
