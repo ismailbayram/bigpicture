@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"strings"
@@ -45,13 +44,13 @@ func (v *FunctionValidator) Validate() error {
 		if strings.HasPrefix(node.Path, v.args.Module) {
 			for _, function := range node.Functions {
 				if function.LineCount > v.args.MaxLineCount {
-					return errors.New(fmt.Sprintf(
+					return fmt.Errorf(
 						"Line count of function '%s' in '%s' is %d, but maximum allowed is %d",
 						function.Name,
 						node.Path,
 						function.LineCount,
 						v.args.MaxLineCount,
-					))
+					)
 				}
 			}
 		}

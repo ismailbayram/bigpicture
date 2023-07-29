@@ -44,15 +44,30 @@ func main() {
 	bp.tree.GenerateLinks()
 	bp.tree.CalculateInstability()
 
-	if os.Args[1] == "server" {
+	switch os.Args[1] {
+	case "server":
 		server.RunServer(staticFiles, bp.cfg.Port, bp.tree.ToJSON())
-	} else if os.Args[1] == "validate" {
+	case "validate":
 		if err := bp.Validate(); err != nil {
 			fmt.Println("validation failed")
 			fmt.Println(err)
 		}
-	} else {
-		fmt.Println("invalid command")
+	case "help":
+		printHelp()
+	default:
+		fmt.Println("Invalid command. Use 'bigpicture help' to see available commands.")
 		os.Exit(1)
 	}
+}
+
+func printHelp() {
+	fmt.Println("Usage:")
+	fmt.Println("server")
+	fmt.Println("\tRuns the web server on port which is defined in .big.picture.json file. Default port is 44525.")
+
+	fmt.Println("\nvalidate")
+	fmt.Println("\tValidates the project structure. It checks if the project structure is valid according to the validators which are defined in .big.picture.json file.")
+
+	fmt.Println("\nhelp")
+	fmt.Println("\tPrints this help message.")
 }

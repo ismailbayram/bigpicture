@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 )
@@ -38,12 +37,12 @@ func (v *InstabilityValidator) Validate() error {
 	node := v.tree.Nodes[v.args.Module]
 
 	if node.Instability != nil && *node.Instability > v.args.Max {
-		return errors.New(fmt.Sprintf(
+		return fmt.Errorf(
 			"instability of %s is %.2f, but should be less than %.2f",
 			node.Path,
 			*node.Instability,
 			v.args.Max,
-		))
+		)
 	}
 	return nil
 }

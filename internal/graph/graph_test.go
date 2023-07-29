@@ -17,8 +17,8 @@ func TestTree_GenerateLinks(t *testing.T) {
 
 	node1 := NewNode("package1", "/node1", Dir, []string{})
 	tree.Nodes["/node1"] = node1
-	node1_file := NewNode("package1", "/node1/file", File, []string{"/node2"})
-	tree.Nodes["/node1/file"] = node1_file
+	node1File := NewNode("package1", "/node1/file", File, []string{"/node2"})
+	tree.Nodes["/node1/file"] = node1File
 	node2 := NewNode("package2", "/node2", Dir, []string{"/node3"})
 	tree.Nodes["/node2"] = node2
 	node3 := NewNode("package3", "/node3", Dir, []string{})
@@ -28,7 +28,7 @@ func TestTree_GenerateLinks(t *testing.T) {
 
 	assert.Equal(t, 3, len(tree.Links))
 
-	assert.Equal(t, node1_file, tree.Links[0].From)
+	assert.Equal(t, node1File, tree.Links[0].From)
 	assert.Equal(t, node2, tree.Links[0].To)
 	assert.True(t, tree.Links[0].IsVisible)
 

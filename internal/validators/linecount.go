@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"strings"
@@ -47,12 +46,12 @@ func (v *LineCountValidator) Validate() error {
 		}
 
 		if strings.HasPrefix(node.Path, v.args.Module) && node.LineCount > v.args.Max {
-			return errors.New(fmt.Sprintf(
+			return fmt.Errorf(
 				"Line count of module '%s' is %d, but maximum allowed is %d",
 				node.Path,
 				node.LineCount,
 				v.args.Max,
-			))
+			)
 		}
 	}
 	return nil

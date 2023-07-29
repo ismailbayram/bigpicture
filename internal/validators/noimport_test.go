@@ -28,11 +28,11 @@ func TestNewNoImportValidator(t *testing.T) {
 	assert.Equal(t, "to is required and must be string", err.Error())
 
 	args = map[string]any{"from": "wrong", "to": "b/*"}
-	validator, err := NewNoImportValidator(args, tree)
+	_, err = NewNoImportValidator(args, tree)
 	assert.Equal(t, "'wrong' is not a valid module. Path should start with /", err.Error())
 
 	args = map[string]any{"from": "a", "to": "*"}
-	validator, err = NewNoImportValidator(args, tree)
+	validator, err := NewNoImportValidator(args, tree)
 	assert.Nil(t, err)
 	assert.Equal(t, "a", validator.args.From)
 	assert.Equal(t, "*", validator.args.To)

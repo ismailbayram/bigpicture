@@ -1,7 +1,6 @@
 package validators
 
 import (
-	"errors"
 	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"strings"
@@ -44,10 +43,10 @@ func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValid
 func (v *NoImportValidator) Validate() error {
 	for _, link := range v.tree.Links {
 		if strings.HasPrefix(link.From.Path, v.args.From) && strings.HasPrefix(link.To.Path, v.args.To) {
-			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
+			return fmt.Errorf("'%s' cannot import '%s'", link.From.Path, link.To.Path)
 		}
 		if v.args.From == "*" && strings.HasPrefix(link.To.Path, v.args.To) || v.args.To == "*" && strings.HasPrefix(link.From.Path, v.args.From) {
-			return errors.New(fmt.Sprintf("'%s' cannot import '%s'", link.From.Path, link.To.Path))
+			return fmt.Errorf("'%s' cannot import '%s'", link.From.Path, link.To.Path)
 		}
 	}
 

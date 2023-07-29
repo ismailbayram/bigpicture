@@ -2,7 +2,6 @@ package validators
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	v10Validator "github.com/go-playground/validator/v10"
 	"github.com/ismailbayram/bigpicture/internal/graph"
@@ -25,7 +24,7 @@ func NewValidator(t string, args map[string]any, tree *graph.Tree) (Validator, e
 	case "function":
 		return NewFunctionValidator(args, tree)
 	default:
-		return nil, errors.New(fmt.Sprintf("unknown validator type: %s", t))
+		return nil, fmt.Errorf("unknown validator type: %s", t)
 	}
 }
 
@@ -77,7 +76,7 @@ func validatePath(path string, tree *graph.Tree) (string, error) {
 	}
 
 	if _, ok := tree.Nodes[path]; !ok && path != "*" {
-		return "", errors.New(fmt.Sprintf("'%s' is not a valid module. Path should start with /", path))
+		return "", fmt.Errorf("'%s' is not a valid module. Path should start with /", path)
 	}
 	return path, nil
 }
