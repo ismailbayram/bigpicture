@@ -54,7 +54,7 @@ non-go files, thus it should be ignored.
 
 ## Validators
 ### NoImportValidator
-Checks if the package imports the given package.
+Checks if the package imports the given package. **It can be used in layered architectures.**
 
 **Example 1**:
 For instance, in this project, `/internal/config` package can not import any other package. 
@@ -120,12 +120,12 @@ Package A is imported by 3 packages and it imports 2 packages. Instability metri
 `2 / (2 + 3) = 0.4`.
 
 **Example**:
-For instance, in this project, `/internal/browser` package can not have instability metric more than 0.5. 
+For instance, in this project, `/internal/graph` package can not have instability metric more than 0.5. 
 ```json
 {
     "type": "instability",
     "args": {
-        "module": "/internal",
+        "module": "/internal/graph",
         "max": 0.5
     }
 }
