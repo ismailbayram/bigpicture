@@ -18,6 +18,16 @@ like in the `.github/workflows/codequality.yml`.
 ```bash
 go install github.com/ismailbayram/bigpicture@1.0.0
 ```
+## Install on Linux
+```bash
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.0/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
+chmod +x /usr/local/bin/bigpicture
+```
+## Install on Mac
+```bash
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.0/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
+chmod +x /usr/local/bin/bigpicture
+```
 
 # Usage
 ## Server
