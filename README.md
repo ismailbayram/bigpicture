@@ -8,8 +8,8 @@ like in the `.github/workflows/codequality.yml`.
 
 # Supported Languages
 - Go
+- Python
 - Java (Under Development)
-- Python (Under Development)
 - C# (Under Development)
 - JS (Under Development)
 

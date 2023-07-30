@@ -6,7 +6,6 @@ import (
 
 const (
 	LangGo = "go"
-	LangJS = "js"
 	LangPy = "py"
 )
 
@@ -21,10 +20,11 @@ func NewBrowser(lang string, tree *graph.Tree, ignoredPaths []string) Browser {
 			ignoredPaths: ignoredPaths,
 			tree:         tree,
 		}
-	case LangJS:
-		return nil
 	case LangPy:
-		return nil
+		return &PythonBrowser{
+			ignoredPaths: ignoredPaths,
+			tree:         tree,
+		}
 	}
 	return nil
 }

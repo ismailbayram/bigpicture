@@ -7,7 +7,7 @@ import (
 	"testing"
 )
 
-func TestGetModuleName(t *testing.T) {
+func TestGoBrowser_GetModuleName(t *testing.T) {
 	os.Chdir("../..")
 
 	browser := &GoBrowser{
@@ -19,7 +19,7 @@ func TestGetModuleName(t *testing.T) {
 	assert.Equal(t, "github.com/ismailbayram/bigpicture", moduleName)
 }
 
-func TestIsIgnored(t *testing.T) {
+func TestGoBrowser_IsIgnored(t *testing.T) {
 	browser := &GoBrowser{
 		ignoredPaths: []string{"internal/browser"},
 		tree:         nil,
@@ -29,7 +29,7 @@ func TestIsIgnored(t *testing.T) {
 	assert.False(t, browser.isIgnored("./internal/other/other.go"))
 }
 
-func TestParseFile(t *testing.T) {
+func TestGoBrowser_ParseFile(t *testing.T) {
 	browser := &GoBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,
@@ -57,8 +57,9 @@ func TestGoBrowser_Browse(t *testing.T) {
 }
 
 func TestGoBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangGo, graph.NewTree("root"), []string{}).(*GoBrowser)
+	browser := NewBrowser(LangGo, graph.NewTree("root"), []string{"internal/browser/pyproject"}).(*GoBrowser)
 
 	browser.browse("./internal/browser", browser.tree.Root)
-	assert.Equal(t, 5, len(browser.tree.Nodes))
+
+	assert.Equal(t, 7, len(browser.tree.Nodes))
 }

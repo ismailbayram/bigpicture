@@ -1,7 +1,8 @@
 {
     "port": 44525,
     "ignore": [
-        "web"
+        "web",
+        "internal/browser/pyproject"
     ],
     "validators": [
         {

@@ -39,7 +39,7 @@ func main() {
 		tree: graph.NewTree("root"),
 	}
 
-	brow := browser.NewBrowser(browser.LangGo, bp.tree, bp.cfg.IgnoredPaths)
+	brow := browser.NewBrowser(detectLanguage(), bp.tree, bp.cfg.IgnoredPaths)
 	brow.Browse(".")
 	bp.tree.GenerateLinks()
 	bp.tree.CalculateInstability()
@@ -71,4 +71,16 @@ func printHelp() {
 
 	fmt.Println("\nhelp")
 	fmt.Println("\tPrints this help message.")
+}
+
+func detectLanguage() string {
+	if _, err := os.Stat("go.mod"); !os.IsNotExist(err) {
+		return browser.LangGo
+	}
+	if _, err := os.Stat("requirements.txt"); !os.IsNotExist(err) {
+		return browser.LangPy
+	}
+	fmt.Println("Could not detect the project language. Please run the command in the root directory of the project.")
+	os.Exit(1)
+	return ""
 }
