@@ -95,7 +95,7 @@ func (b *PythonBrowser) parseFile(path string, parentNode *graph.Node) *graph.No
 	for name, functionBody := range functionsInfo {
 		functions = append(functions, graph.Function{
 			Name:      name,
-			LineCount: len(strings.Split(functionBody, "\n")) - 2,
+			LineCount: len(strings.Split(functionBody, "\n")) - 1,
 		})
 	}
 
@@ -135,33 +135,40 @@ func findImports(pythonCode string) []string {
 	return imports
 }
 
-func findFunctions(pythonCode string) map[string]string {
+func findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
 
-	lines := strings.Split(pythonCode, "\n")
+	lines := strings.Split(fileContent, "\n")
 	functionRegex := regexp.MustCompile(`^\s*def\s+(\w+)\s*\((.*?)\):`)
 
 	var currentFunctionName string
-	var currentFunctionContent strings.Builder
+	var currentFunctionContent string
 
 	for _, line := range lines {
 		if matches := functionRegex.FindStringSubmatch(line); len(matches) > 1 {
 			if currentFunctionName != "" {
-				functions[currentFunctionName] = currentFunctionContent.String()
-				currentFunctionContent.Reset()
+				functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
+				currentFunctionContent = ""
 			}
 
 			currentFunctionName = matches[1]
 		}
 
+		if currentFunctionName != "" && (strings.Contains(line, "@") || strings.Contains(line, "class ")) {
+			functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
+			currentFunctionContent = ""
+			currentFunctionName = ""
+			continue
+		}
+
 		if currentFunctionName != "" {
-			currentFunctionContent.WriteString(line)
-			currentFunctionContent.WriteString("\n")
+			currentFunctionContent += line
+			currentFunctionContent += "\n"
 		}
 	}
 
 	if currentFunctionName != "" {
-		functions[currentFunctionName] = currentFunctionContent.String()
+		functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
 	}
 
 	return functions
