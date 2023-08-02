@@ -7,8 +7,9 @@ import (
 )
 
 type NoImportValidatorArgs struct {
-	From string `json:"from" validate:"required=true"`
-	To   string `json:"to" validate:"required=true"`
+	From   string   `json:"from" validate:"required=true"`
+	To     string   `json:"to" validate:"required=true"`
+	Ignore []string `json:"ignore"`
 }
 
 type NoImportValidator struct {
@@ -42,6 +43,10 @@ func NewNoImportValidator(args map[string]any, tree *graph.Tree) (*NoImportValid
 
 func (v *NoImportValidator) Validate() error {
 	for _, link := range v.tree.Links {
+		if isIgnored(v.args.Ignore, link.From.Path) || isIgnored(v.args.Ignore, link.To.Path) {
+			continue
+		}
+
 		if strings.HasPrefix(link.From.Path, v.args.From) && strings.HasPrefix(link.To.Path, v.args.To) {
 			return fmt.Errorf("'%s' cannot import '%s'", link.From.Path, link.To.Path)
 		}
