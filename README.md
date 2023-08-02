@@ -35,6 +35,7 @@ Runs a server on port 44525. Architecture of the project can be seen on the brow
 ```bash
 bigpicture server
 ```
+![Source Graph](./source_graph.png)
 
 ## Validate
 Validates the architecture of the project according to the rules defined in the `.bigpicture.json` file.

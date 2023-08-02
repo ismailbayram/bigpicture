@@ -10,48 +10,111 @@
     <script src="/go.js"></script>
 </head>
 <body>
-
+<h1>NODES CAN BE DRAGGED OR DELETED</h1>
 <div id="graph-div"></div>
 
 
 <script>
+    const $ = go.GraphObject.make;
+
     var Graph = new go.Diagram("graph-div", {
         "undoManager.isEnabled": true,
         layout: new go.TreeLayout({angle: 90, layerSpacing: 35})
     });
 
-    Graph.nodeTemplate = new go.Node("Horizontal", {background: "#44CCFF"}).add(
-        new go.TextBlock("Default Text", {
-            margin: 12,
-            stroke: "white",
-            font: "bold 16px sans-serif",
-        }).bind("text", "name")
-    );
+    Graph.nodeTemplate =
+        $(go.Node, "Auto",
+            new go.Binding("location").makeTwoWay(),
+            {
+                locationSpot: go.Spot.Center,
+                toEndSegmentLength: 30, fromEndSegmentLength: 30
+            },
+            $(go.Shape, "Rectangle",
+                {
+                    name: "OBJSHAPE",
+                    fill: "white",
+                    desiredSize: new go.Size(120, 30)
+                }),
+            $(go.TextBlock,
+                {margin: 4},
+                new go.Binding("text", "name"))
+        );
 
-    Graph.model.linkDataArray = [
-        {from: "internal/browser/browser.go", to: "internal/graph"},
-        {from: "Beta", to: "Gamma"}
-    ];
+    // define the link template
+    Graph.linkTemplate =
+        $(go.Link,
+            {
+                selectionAdornmentTemplate:
+                    $(go.Adornment,
+                        $(go.Shape,
+                            {isPanelMain: true, stroke: "dodgerblue", strokeWidth: 3}),
+                        $(go.Shape,
+                            {toArrow: "Standard", fill: "dodgerblue", stroke: null, scale: 1})
+                    ),
+                routing: go.Link.Normal,
+                curve: go.Link.Bezier,
+                toShortLength: 2
+            },
+            $(go.Shape,  //  the link shape
+                {name: "OBJSHAPE"}),
+            $(go.Shape,  //  the arrowhead
+                {name: "ARWSHAPE", toArrow: "Standard"})
+        );
+
+    // define the group template
+    Graph.groupTemplate =
+        $(go.Group, "Spot",
+            {
+                selectionAdornmentTemplate: // adornment when a group is selected
+                    $(go.Adornment, "Auto",
+                        $(go.Shape, "Rectangle",
+                            {fill: null, stroke: "dodgerblue", strokeWidth: 3}),
+                        $(go.Placeholder)
+                    ),
+                toSpot: go.Spot.AllSides, // links coming into groups at any side
+                toEndSegmentLength: 30, fromEndSegmentLength: 30
+            },
+            $(go.Panel, "Auto",
+                $(go.Shape, "Rectangle",
+                    {
+                        name: "OBJSHAPE",
+                        parameter1: 14,
+                        fill: "rgba(94,216,238,0.10)"
+                    },
+                    new go.Binding("desiredSize", "ds")),
+                $(go.Placeholder,
+                    {padding: 16})
+            ),
+            $(go.TextBlock,
+                {
+                    name: "GROUPTEXT",
+                    alignment: go.Spot.TopLeft,
+                    alignmentFocus: new go.Spot(0, 0, -4, -4),
+                    font: "Bold 10pt Sans-Serif"
+                },
+                new go.Binding("text", "key"))
+        );
 
     var data = fetch("/graph").then(function (response) {
         return response.json();
     }).then(function (data) {
         Graph.model.nodeDataArray = Object.keys(data.nodes).map(function (nodePath) {
-           return {
-               key: data.nodes[nodePath].path,
-               name: data.nodes[nodePath].path,
-               isGroup: data.nodes[nodePath].type === 1,
-               group: data.nodes[nodePath].parent
-           }
+            return {
+                key: data.nodes[nodePath].path,
+                name: data.nodes[nodePath].path.split('/').pop(),
+                isGroup: data.nodes[nodePath].type === 1,
+                group: data.nodes[nodePath].parent,
+            }
         });
 
         Graph.model.linkDataArray = data.links.filter(link => link.is_visible)
             .map(function (link) {
-            return {
-                from: link.from.path,
-                to: link.to.path
-            }
-        });
+                return {
+                    from: link.from.path,
+                    to: link.to.path,
+                    key: `${link.from.path}_${link.to.path}`
+                }
+            });
     });
 
 </script>

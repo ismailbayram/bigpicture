@@ -26,6 +26,7 @@ footer, header, hgroup, menu, nav, section {
 html,
 body {
     height: 100%;
+	font-family: Arial, Helvetica, sans-serif;
 }
 body {
 	line-height: 1;
@@ -44,6 +45,12 @@ q:before, q:after {
 table {
 	border-collapse: collapse;
 	border-spacing: 0;
+}
+
+h1 {
+	text-align: center;
+	padding: 15px 0;
+	font-weight: 600;
 }
 
 #graph-div {
