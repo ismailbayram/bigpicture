@@ -2,6 +2,7 @@
     "port": 44525,
     "ignore": [
         "web",
+        "bin",
         "internal/browser/pyproject"
     ],
     "validators": [

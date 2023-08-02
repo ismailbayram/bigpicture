@@ -37,9 +37,10 @@ func (t *Tree) GenerateLinks() {
 				t.Links = append(t.Links, NewLink(node, t.Nodes[imported], true))
 			}
 
-			for node.Parent != "." && node.Parent != t.Root.Path {
-				node = t.Nodes[node.Parent]
-				t.Links = append(t.Links, NewLink(node, t.Nodes[imported], false))
+			parentNode := node
+			for parentNode.Parent != "." && parentNode.Parent != t.Root.Path {
+				parentNode = t.Nodes[parentNode.Parent]
+				t.Links = append(t.Links, NewLink(parentNode, t.Nodes[imported], false))
 			}
 		}
 	}
