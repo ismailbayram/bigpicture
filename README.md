@@ -16,16 +16,16 @@ like in the `.github/workflows/codequality.yml`.
 # Installation
 ## Install with Go
 ```bash
-go install github.com/ismailbayram/bigpicture@1.1.1
+go install github.com/ismailbayram/bigpicture@1.1.2
 ```
 ## Install on Linux
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.1/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.2/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 ## Install on Macos
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.1/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.2/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 
