@@ -5,6 +5,16 @@ BigPicture is a tool to validate the architecture of project.
 It can be used in Continuous Integration (CI) pipelines to validate the architecture of the project
 like in the `.github/workflows/codequality.yml`.
 
+# Why do we need this tool?
+There are many rules to define the architecture of a project and it is hard to keep them in mind.
+For instance, 
+- In a layered architecture, a package can not import a package from the upper layer.
+- In a hexagonal architecture, a package can not import a package from the outer layer.
+- A package can not have a file which has more than 100 lines.
+- A package can not have a function which has more than 20 lines.
+
+BigPicture allows you to define these rules in a `.bigpicture.json` file and validate the architecture of the project.
+
 
 # Supported Languages
 - Go
@@ -12,6 +22,21 @@ like in the `.github/workflows/codequality.yml`.
 - Java (Under Development)
 - C# (Under Development)
 - JS (Under Development)
+--------------------
+- [Installation](#installation)
+    - [Install with Go](#install-with-go)
+    - [Install on Linux](#install-on-linux)
+    - [Install on Macos](#install-on-macos)
+- [Usage](#usage)
+    - [Server](#server)
+    - [Validate](#validate)
+    - [.bigpicture.json File](#bigpicturejson-file)
+- [Validators](#validators)
+    - [NoImportValidator](#noimportvalidator)
+    - [LineCountValidator](#linecountvalidator)
+    - [FunctionValidator](#functionvalidator)
+    - [InstabilityValidator](#instabilityvalidator)
+- [Contribution](#contribution)
 
 # Installation
 ## Install with Go
