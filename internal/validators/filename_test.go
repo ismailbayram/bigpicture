@@ -28,11 +28,11 @@ func TestNewFileNameValidator(t *testing.T) {
 	assert.Equal(t, "'wrong' is not a valid module. Path should start with /", err.Error())
 
 	args = map[string]any{"module": "a", "max_length": float64(10)}
-	validator, err := NewFileNameValidator(args, tree)
+	_, err = NewFileNameValidator(args, tree)
 	assert.Nil(t, err)
 
 	args = map[string]any{"module": "a", "max_length": float64(10), "regexp": "[a-z]"}
-	validator, err = NewFileNameValidator(args, tree)
+	validator, err := NewFileNameValidator(args, tree)
 	assert.Nil(t, err)
 	assert.Equal(t, "a", validator.args.Module)
 	assert.Equal(t, 10, validator.args.MaxLength)
@@ -56,12 +56,12 @@ func TestFileNameValidator_Validate(t *testing.T) {
 	assert.Nil(t, err)
 
 	args = map[string]any{"module": "/srv", "max_length": float64(10), "regexp": "^[a-z]+$"}
-	validator, err = NewFileNameValidator(args, tree)
+	validator, _ = NewFileNameValidator(args, tree)
 	err = validator.Validate()
 	assert.Equal(t, "File name of '/srv/server_1.go' does not match '^[a-z]+$'", err.Error())
 
 	args = map[string]any{"module": "/srv", "max_length": float64(10), "regexp": "^[a-z]+[0-9_]*$"}
-	validator, err = NewFileNameValidator(args, tree)
+	validator, _ = NewFileNameValidator(args, tree)
 	err = validator.Validate()
 	assert.Nil(t, err)
 }
