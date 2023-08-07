@@ -39,7 +39,13 @@ func main() {
 		tree: graph.NewTree("root"),
 	}
 
-	brow := browser.NewBrowser(detectLanguage(), bp.tree, bp.cfg.IgnoredPaths)
+	lang := detectLanguage()
+	if len(os.Args) == 3 {
+		checkSupportedLang(os.Args[2])
+		lang = os.Args[2]
+	}
+
+	brow := browser.NewBrowser(lang, bp.tree, bp.cfg.IgnoredPaths)
 	brow.Browse(".")
 	bp.tree.GenerateLinks()
 	bp.tree.CalculateInstability()
@@ -80,7 +86,21 @@ func detectLanguage() string {
 	if _, err := os.Stat("requirements.txt"); !os.IsNotExist(err) {
 		return browser.LangPy
 	}
-	fmt.Println("Could not detect the project language. Please run the command in the root directory of the project.")
+	fmt.Printf("Could not detect the project language. Please run the command in the root directory of the project"+
+		" or you can pass the lang arg.\n"+
+		"%s\n"+
+		"For example: bigpicture validate java\n", supportedlangs())
 	os.Exit(1)
 	return ""
+}
+
+func checkSupportedLang(lang string) {
+	if lang != browser.LangGo && lang != browser.LangPy {
+		fmt.Printf("Unsupported language: %s\n%s", lang, supportedlangs())
+		os.Exit(1)
+	}
+}
+
+func supportedlangs() string {
+	return fmt.Sprintf("Supported languages: %s, %s\n", browser.LangGo, browser.LangPy)
 }
