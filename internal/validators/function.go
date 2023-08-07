@@ -41,17 +41,19 @@ func (v *FunctionValidator) Validate() error {
 			continue
 		}
 
-		if strings.HasPrefix(node.Path, v.args.Module) {
-			for _, function := range node.Functions {
-				if function.LineCount > v.args.MaxLineCount {
-					return fmt.Errorf(
-						"Line count of function '%s' in '%s' is %d, but maximum allowed is %d",
-						function.Name,
-						node.Path,
-						function.LineCount,
-						v.args.MaxLineCount,
-					)
-				}
+		if !strings.HasPrefix(node.Path, v.args.Module) {
+			continue
+		}
+
+		for _, function := range node.Functions {
+			if function.LineCount > v.args.MaxLineCount {
+				return fmt.Errorf(
+					"Line count of function '%s' in '%s' is %d, but maximum allowed is %d",
+					function.Name,
+					node.Path,
+					function.LineCount,
+					v.args.MaxLineCount,
+				)
 			}
 		}
 	}

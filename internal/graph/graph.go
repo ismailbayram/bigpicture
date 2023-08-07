@@ -115,6 +115,11 @@ func NewNode(packageName string, path string, _type Type, importRaw []string) *N
 	return node
 }
 
+func (n *Node) FileName() string {
+	parts := strings.Split(n.Path, "/")
+	return strings.Split(parts[len(parts)-1], ".")[0]
+}
+
 func (n *Node) ToJSON() string {
 	data, err := json.Marshal(&struct {
 		Node

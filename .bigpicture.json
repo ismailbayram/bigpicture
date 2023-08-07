@@ -40,6 +40,17 @@
                 "module": "/internal",
                 "max_line_count": 50
             }
+        },
+        {
+            "type": "file_name",
+            "args": {
+                "module": "/internal",
+                "max_length": 12,
+                "regexp": "^[a-z]+$",
+                "ignore": [
+                    "*_test.go"
+                ]
+            }
         }
     ]
 }

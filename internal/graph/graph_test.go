@@ -58,6 +58,14 @@ func TestNewNode(t *testing.T) {
 	assert.Equal(t, ".", node.Parent)
 }
 
+func TestNode_FileName(t *testing.T) {
+	node := NewNode("package", "path/dir", Dir, nil)
+	assert.Equal(t, "dir", node.FileName())
+
+	node = NewNode("package", "path/dir/file.go", File, nil)
+	assert.Equal(t, "file", node.FileName())
+}
+
 func TestNode_ToJSON(t *testing.T) {
 	node := NewNode("package", "path/dir", Dir, nil)
 	node.Functions = []Function{{Name: "test", LineCount: 10}}

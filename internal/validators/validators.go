@@ -23,6 +23,8 @@ func NewValidator(t string, args map[string]any, tree *graph.Tree) (Validator, e
 		return NewLineCountValidator(args, tree)
 	case "function":
 		return NewFunctionValidator(args, tree)
+	case "file_name":
+		return NewFileNameValidator(args, tree)
 	default:
 		return nil, fmt.Errorf("unknown validator type: %s", t)
 	}

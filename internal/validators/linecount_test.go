@@ -58,7 +58,6 @@ func TestLineCountValidator_Validate(t *testing.T) {
 		"browser/go",
 	})
 	tree.Nodes["config"] = graph.NewNode("config", "config", graph.Dir, []string{})
-	tree.Nodes["config"].LineCount = 200
 	tree.Nodes["config/subconfig"] = graph.NewNode("subconfig", "config/subconfig", graph.Dir, []string{})
 	tree.Nodes["config/subconfig"].LineCount = 200
 	tree.Nodes["browser"] = graph.NewNode("browser", "browser", graph.Dir, []string{
@@ -71,5 +70,5 @@ func TestLineCountValidator_Validate(t *testing.T) {
 	args = map[string]any{"module": "config", "max": float64(100)}
 	validator, _ = NewLineCountValidator(args, tree)
 	err = validator.Validate()
-	assert.Equal(t, "Line count of module 'config' is 200, but maximum allowed is 100", err.Error())
+	assert.Equal(t, "Line count of module 'config/subconfig' is 200, but maximum allowed is 100", err.Error())
 }
