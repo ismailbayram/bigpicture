@@ -86,11 +86,15 @@ func detectLanguage() string {
 	if _, err := os.Stat("requirements.txt"); !os.IsNotExist(err) {
 		return browser.LangPy
 	}
+	if _, err := os.Stat("pom.xml"); !os.IsNotExist(err) {
+		return browser.LangJava
+	}
 	fmt.Printf("Could not detect the project language. Please run the command in the root directory of the project"+
 		" or you can pass the lang arg.\n"+
 		"%s\n"+
 		"For example: bigpicture validate java\n", supportedlangs())
 	os.Exit(1)
+
 	return ""
 }
 

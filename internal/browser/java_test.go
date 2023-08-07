@@ -7,28 +7,28 @@ import (
 	"testing"
 )
 
-func ChangeDirToPythonProjectRoot() {
-	err := os.Chdir("../pyproject")
+func ChangeDirToJavaProjectRoot() {
+	err := os.Chdir("internal/browser/javaproject")
 	if err != nil {
 		panic(err)
 	}
 }
 
-func TestPythonBrowser_GetModuleName(t *testing.T) {
-	ChangeDirToPythonProjectRoot()
+func TestJavaBrowser_GetModuleName(t *testing.T) {
+	ChangeDirToJavaProjectRoot()
 
-	browser := &PythonBrowser{
+	browser := &JavaBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,
 	}
 
 	moduleName := browser.getModuleName()
-	assert.Equal(t, "pyproject", moduleName)
+	assert.Equal(t, "javaproject", moduleName)
 }
 
-func TestPythonBrowser_clearNonProjectImports(t *testing.T) {
+func TestJavaBrowser_clearNonProjectImports(t *testing.T) {
 
-	browser := &PythonBrowser{
+	browser := &JavaBrowser{
 		ignoredPaths: []string{},
 		tree:         graph.NewTree("root"),
 	}
@@ -45,14 +45,14 @@ func TestPythonBrowser_clearNonProjectImports(t *testing.T) {
 	assert.Equal(t, "cars", browser.tree.Nodes["baskets"].ImportRaw[0])
 }
 
-func TestPythonBrowser_ParseFile(t *testing.T) {
-	browser := &PythonBrowser{
+func TestJavaBrowser_ParseFile(t *testing.T) {
+	browser := &JavaBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,
-		moduleName:   "pyproject",
+		moduleName:   "javaproject",
 	}
-	parentNode := graph.NewNode("pyproject", "./", graph.Dir, nil)
-	node := browser.parseFile("baskets/service.py", parentNode)
+	parentNode := graph.NewNode("javaproject", "./", graph.Dir, nil)
+	node := browser.parseFile("src/com/shashi/service/impl/TrainServiceImpl.java", parentNode)
 	assert.NotNil(t, node)
 	assert.Equal(t, "baskets/service.py", node.Path)
 	assert.Equal(t, "service.py", node.PackageName)
@@ -86,18 +86,18 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 
 }
 
-func TestPythonBrowser_Browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+func TestJavaBrowser_Browse(t *testing.T) {
+	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}).(*JavaBrowser)
 
 	browser.Browse(".")
-	assert.Equal(t, "pyproject", browser.moduleName)
+	assert.Equal(t, "javaproject", browser.moduleName)
 	assert.NotEqual(t, 1, len(browser.tree.Nodes))
 }
 
-func TestPythonBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+func TestJavaBrowser_browse(t *testing.T) {
+	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}).(*JavaBrowser)
 
-	browser.browse("base/", browser.tree.Root)
+	browser.browse("src/", browser.tree.Root)
 
 	assert.Equal(t, 6, len(browser.tree.Nodes))
 }

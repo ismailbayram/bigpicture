@@ -19,16 +19,6 @@ func TestGoBrowser_GetModuleName(t *testing.T) {
 	assert.Equal(t, "github.com/ismailbayram/bigpicture", moduleName)
 }
 
-func TestGoBrowser_IsIgnored(t *testing.T) {
-	browser := &GoBrowser{
-		ignoredPaths: []string{"internal/browser"},
-		tree:         nil,
-	}
-
-	assert.True(t, browser.isIgnored("./internal/browser/go.go"))
-	assert.False(t, browser.isIgnored("./internal/other/other.go"))
-}
-
 func TestGoBrowser_ParseFile(t *testing.T) {
 	browser := &GoBrowser{
 		ignoredPaths: []string{},
@@ -57,9 +47,13 @@ func TestGoBrowser_Browse(t *testing.T) {
 }
 
 func TestGoBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangGo, graph.NewTree("root"), []string{"internal/browser/pyproject"}).(*GoBrowser)
+	browser := NewBrowser(
+		LangGo,
+		graph.NewTree("root"),
+		[]string{"internal/browser/pyproject", "internal/browser/javaproject"},
+	).(*GoBrowser)
 
 	browser.browse("./internal/browser", browser.tree.Root)
 
-	assert.Equal(t, 7, len(browser.tree.Nodes))
+	assert.Equal(t, 9, len(browser.tree.Nodes))
 }

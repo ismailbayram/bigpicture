@@ -8,19 +8,19 @@ import (
 	"strings"
 )
 
-type PythonBrowser struct {
+type JavaBrowser struct {
 	ignoredPaths []string
 	moduleName   string
 	tree         *graph.Tree
 }
 
-func (b *PythonBrowser) Browse(parentPath string) {
+func (b *JavaBrowser) Browse(parentPath string) {
 	b.moduleName = b.getModuleName()
 	b.browse(parentPath, b.tree.Root)
 	b.clearNonProjectImports()
 }
 
-func (b *PythonBrowser) getModuleName() string {
+func (b *JavaBrowser) getModuleName() string {
 	directory, err := os.Getwd()
 	if err != nil {
 		panic(err)
@@ -28,7 +28,7 @@ func (b *PythonBrowser) getModuleName() string {
 	return strings.Split(directory, "/")[len(strings.Split(directory, "/"))-1]
 }
 
-func (b *PythonBrowser) clearNonProjectImports() {
+func (b *JavaBrowser) clearNonProjectImports() {
 	for _, node := range b.tree.Nodes {
 		var clearedImports []string
 		for _, imp := range node.ImportRaw {
@@ -40,7 +40,7 @@ func (b *PythonBrowser) clearNonProjectImports() {
 	}
 }
 
-func (b *PythonBrowser) browse(parentPath string, parentNode *graph.Node) {
+func (b *JavaBrowser) browse(parentPath string, parentNode *graph.Node) {
 	entries, err := os.ReadDir(parentPath)
 
 	if err != nil {
@@ -58,14 +58,14 @@ func (b *PythonBrowser) browse(parentPath string, parentNode *graph.Node) {
 			node := graph.NewNode(fName, path, graph.Dir, nil)
 			b.tree.Nodes[node.Path] = node
 			b.browse(path, node)
-		} else if strings.HasSuffix(fName, ".py") {
+		} else if strings.HasSuffix(fName, ".java") {
 			node := b.parseFile(path, parentNode)
 			b.tree.Nodes[node.Path] = node
 		}
 	}
 }
 
-func (b *PythonBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
+func (b *JavaBrowser) parseFile(path string, parentNode *graph.Node) *graph.Node {
 	file, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)
@@ -90,35 +90,31 @@ func (b *PythonBrowser) parseFile(path string, parentNode *graph.Node) *graph.No
 	return node
 }
 
-func (b *PythonBrowser) findImports(pythonCode string) []string {
+func (b *JavaBrowser) findImports(javaCode string) []string {
 	var imports []string
 
-	lines := strings.Split(pythonCode, "\n")
-	importRegex := regexp.MustCompile(`^\s*import\s+([^\s#]+)`)
-	fromImportRegex := regexp.MustCompile(`^\s*from\s+([^\s]+)\s+import`)
+	importPattern := regexp.MustCompile(`import\s+([^;\n]+);`)
 
-	for _, line := range lines {
-		var importItem string
-
-		if matches := importRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
-		} else if matches := fromImportRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
-		}
-		if importItem == "" {
+	matches := importPattern.FindAllSubmatch([]byte(javaCode), -1)
+	for _, match := range matches {
+		importItem := string(match[1])
+		if strings.HasPrefix(importItem, "java.") {
 			continue
 		}
 
-		if strings.HasSuffix(importItem, "*.py") {
-			importItem = importItem[:len(importItem)-5]
+		importItem = "/" + strings.Replace(importItem, ".", "/", -1) + ".java"
+		if strings.HasSuffix(importItem, "*.java") {
+			importItem = importItem[:len(importItem)-7]
 		}
+
 		imports = append(imports, importItem)
 	}
+	fmt.Println(imports)
 
 	return imports
 }
 
-func (b *PythonBrowser) findFunctions(fileContent string) map[string]string {
+func (b *JavaBrowser) findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
 
 	lines := strings.Split(fileContent, "\n")

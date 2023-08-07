@@ -19,7 +19,7 @@ BigPicture allows you to define these rules in a `.bigpicture.json` file and val
 # Supported Languages
 - Go
 - Python
-- Java (Under Development)
+- Java
 - C# (Under Development)
 - JS (Under Development)
 --------------------
