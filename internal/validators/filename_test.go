@@ -43,7 +43,6 @@ func TestFileNameValidator_Validate(t *testing.T) {
 	tree := graph.NewTree("root")
 	tree.Nodes["/srv"] = graph.NewNode("srv", "/srv", graph.Dir, []string{})
 	tree.Nodes["/srv/server.go"] = graph.NewNode("srv", "/srv/server.go", graph.Dir, []string{})
-	tree.Nodes["/srv/server_1.go"] = graph.NewNode("srv", "/srv/server_1.go", graph.Dir, []string{})
 
 	args := map[string]any{"module": "/srv", "max_length": float64(5)}
 	validator, _ := NewFileNameValidator(args, tree)
@@ -55,6 +54,7 @@ func TestFileNameValidator_Validate(t *testing.T) {
 	err = validator.Validate()
 	assert.Nil(t, err)
 
+	tree.Nodes["/srv/server_1.go"] = graph.NewNode("srv", "/srv/server_1.go", graph.Dir, []string{})
 	args = map[string]any{"module": "/srv", "max_length": float64(10), "regexp": "^[a-z]+$"}
 	validator, _ = NewFileNameValidator(args, tree)
 	err = validator.Validate()

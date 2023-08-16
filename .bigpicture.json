@@ -3,7 +3,8 @@
     "ignore": [
         "web",
         "bin",
-        "internal/browser/pyproject"
+        "internal/browser/pyproject",
+        "internal/browser/javaproject"
     ],
     "validators": [
         {

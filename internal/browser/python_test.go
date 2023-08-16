@@ -8,7 +8,7 @@ import (
 )
 
 func ChangeDirToPythonProjectRoot() {
-	err := os.Chdir("internal/browser/pyproject")
+	err := os.Chdir("../pyproject")
 	if err != nil {
 		panic(err)
 	}
@@ -45,21 +45,12 @@ func TestPythonBrowser_clearNonProjectImports(t *testing.T) {
 	assert.Equal(t, "cars", browser.tree.Nodes["baskets"].ImportRaw[0])
 }
 
-func TestPythonBrowser_IsIgnored(t *testing.T) {
-	browser := &PythonBrowser{
-		ignoredPaths: []string{"base"},
-		tree:         nil,
-	}
-
-	assert.True(t, browser.isIgnored("./base/models.py"))
-	assert.False(t, browser.isIgnored("./users/utils.py"))
-}
-
 func TestPythonBrowser_ParseFile(t *testing.T) {
 	browser := &PythonBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,
 		moduleName:   "pyproject",
+		rootDir:      "/",
 	}
 	parentNode := graph.NewNode("pyproject", "./", graph.Dir, nil)
 	node := browser.parseFile("baskets/service.py", parentNode)
@@ -97,7 +88,7 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 }
 
 func TestPythonBrowser_Browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}, "/").(*PythonBrowser)
 
 	browser.Browse(".")
 	assert.Equal(t, "pyproject", browser.moduleName)
@@ -105,7 +96,7 @@ func TestPythonBrowser_Browse(t *testing.T) {
 }
 
 func TestPythonBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}, "/").(*PythonBrowser)
 
 	browser.browse("base/", browser.tree.Root)
 

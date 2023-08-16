@@ -8,7 +8,6 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
-	"regexp"
 	"strings"
 )
 
@@ -32,23 +31,6 @@ func (b *GoBrowser) getModuleName() string {
 	return strings.Split(firstLine, " ")[1]
 }
 
-func (b *GoBrowser) isIgnored(entryPath string) bool {
-	isIgnored := false
-	for _, ignore := range b.ignoredPaths {
-		regxp := ignore
-		if strings.HasPrefix(ignore, "*") {
-			regxp = fmt.Sprintf("^%s$", ignore)
-		}
-		re := regexp.MustCompile(regxp)
-		if re.MatchString(entryPath) {
-			isIgnored = true
-			break
-		}
-	}
-
-	return isIgnored
-}
-
 func (b *GoBrowser) browse(parentPath string, parentNode *graph.Node) {
 	entries, err := os.ReadDir(parentPath)
 
@@ -59,7 +41,7 @@ func (b *GoBrowser) browse(parentPath string, parentNode *graph.Node) {
 	for _, e := range entries {
 		fName := e.Name()
 		path := fmt.Sprintf("%s/%s", parentPath, fName)
-		if b.isIgnored(path) {
+		if isIgnored(b.ignoredPaths, path) {
 			continue
 		}
 

@@ -11,6 +11,7 @@ import (
 type PythonBrowser struct {
 	ignoredPaths []string
 	moduleName   string
+	rootDir      string
 	tree         *graph.Tree
 }
 
@@ -40,23 +41,6 @@ func (b *PythonBrowser) clearNonProjectImports() {
 	}
 }
 
-func (b *PythonBrowser) isIgnored(entryPath string) bool {
-	isIgnored := false
-	for _, ignore := range b.ignoredPaths {
-		regxp := ignore
-		if strings.HasPrefix(ignore, "*") {
-			regxp = fmt.Sprintf("^%s$", ignore)
-		}
-		re := regexp.MustCompile(regxp)
-		if re.MatchString(entryPath) {
-			isIgnored = true
-			break
-		}
-	}
-
-	return isIgnored
-}
-
 func (b *PythonBrowser) browse(parentPath string, parentNode *graph.Node) {
 	entries, err := os.ReadDir(parentPath)
 
@@ -67,7 +51,7 @@ func (b *PythonBrowser) browse(parentPath string, parentNode *graph.Node) {
 	for _, e := range entries {
 		fName := e.Name()
 		path := fmt.Sprintf("%s/%s", parentPath, fName)
-		if b.isIgnored(path) {
+		if isIgnored(b.ignoredPaths, path) {
 			continue
 		}
 
@@ -91,7 +75,7 @@ func (b *PythonBrowser) parseFile(path string, parentNode *graph.Node) *graph.No
 
 	// extract functions
 	functions := make([]graph.Function, 0)
-	functionsInfo := findFunctions(fileContent)
+	functionsInfo := b.findFunctions(fileContent)
 	for name, functionBody := range functionsInfo {
 		functions = append(functions, graph.Function{
 			Name:      name,
@@ -100,14 +84,14 @@ func (b *PythonBrowser) parseFile(path string, parentNode *graph.Node) *graph.No
 	}
 
 	fName := path[strings.LastIndex(path, "/")+1:]
-	node := graph.NewNode(fName, path, graph.File, findImports(fileContent))
+	node := graph.NewNode(fName, path, graph.File, b.findImports(fileContent))
 	node.Functions = functions
 	node.LineCount = strings.Count(fileContent, "\n")
 
 	return node
 }
 
-func findImports(pythonCode string) []string {
+func (b *PythonBrowser) findImports(pythonCode string) []string {
 	var imports []string
 
 	lines := strings.Split(pythonCode, "\n")
@@ -118,9 +102,9 @@ func findImports(pythonCode string) []string {
 		var importItem string
 
 		if matches := importRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
+			importItem = b.rootDir + strings.Replace(matches[1], ".", "/", -1) + ".py"
 		} else if matches := fromImportRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
+			importItem = b.rootDir + strings.Replace(matches[1], ".", "/", -1) + ".py"
 		}
 		if importItem == "" {
 			continue
@@ -135,7 +119,7 @@ func findImports(pythonCode string) []string {
 	return imports
 }
 
-func findFunctions(fileContent string) map[string]string {
+func (b *PythonBrowser) findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
 
 	lines := strings.Split(fileContent, "\n")
