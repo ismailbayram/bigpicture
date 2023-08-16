@@ -36,21 +36,22 @@ BigPicture allows you to define these rules in a `.bigpicture.json` file and val
     - [LineCountValidator](#linecountvalidator)
     - [FunctionValidator](#functionvalidator)
     - [InstabilityValidator](#instabilityvalidator)
+    - [FileNameValidator](#filenamevalidator)
 - [Contribution](#contribution)
 
 # Installation
 ## Install with Go
 ```bash
-go install github.com/ismailbayram/bigpicture@1.1.2
+go install github.com/ismailbayram/bigpicture@1.2.0
 ```
 ## Install on Linux
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.2/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.0/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 ## Install on Macos
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.1.2/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.0/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 
@@ -185,6 +186,22 @@ For instance, in this project, `/internal/graph` package can not have instabilit
 }
 ```
 
+### FileNameValidator
+Checks if the package has files which do not match the given regular expression.
+
+```json
+{
+    "type": "file_name",
+    "args": {
+        "module": "/internal",
+        "max_length": 12,
+        "regexp": "^[a-z]+$",
+        "ignore": [
+            "*_test.go"
+        ]
+    }
+}
+```
 
 
 # Contribution
