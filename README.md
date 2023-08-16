@@ -72,6 +72,7 @@ bigpicture validate
 `.bigpicture.json` file is used to define the rules. It should be in the root directory of the project.
 ```json
 {
+    "lang": "go",
     "port": 44525,
     "ignore": [
         "web"
@@ -81,6 +82,7 @@ bigpicture validate
     ]
 }
 ```
+**lang**: BigPicture sometimes fails on detecting language of the project. You can define the language of the project.
 **port**: Port number of the server. Default value is 44525.
 
 **ignore**: Directories to ignore. Default value is empty. For instance in this project `web` directory includes

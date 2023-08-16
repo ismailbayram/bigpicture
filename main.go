@@ -40,9 +40,15 @@ func main() {
 	}
 
 	lang := detectLanguage()
-	if len(os.Args) == 3 {
-		checkSupportedLang(os.Args[2])
-		lang = os.Args[2]
+	if bp.cfg.Lang != "" {
+		checkSupportedLang(bp.cfg.Lang)
+		lang = bp.cfg.Lang
+	}
+	if lang == "" && bp.cfg.Lang == "" {
+		fmt.Printf("Could not detect the project language. Please run the command in the root directory of the project"+
+			" or you can set `lang` parameter in .bigpicture.json file.\n"+
+			"%s\n", supportedLangs())
+		os.Exit(1)
 	}
 
 	brow := browser.NewBrowser(lang, bp.tree, bp.cfg.IgnoredPaths)
@@ -89,22 +95,16 @@ func detectLanguage() string {
 	if _, err := os.Stat("pom.xml"); !os.IsNotExist(err) {
 		return browser.LangJava
 	}
-	fmt.Printf("Could not detect the project language. Please run the command in the root directory of the project"+
-		" or you can pass the lang arg.\n"+
-		"%s\n"+
-		"For example: bigpicture validate java\n", supportedlangs())
-	os.Exit(1)
-
 	return ""
 }
 
 func checkSupportedLang(lang string) {
 	if lang != browser.LangGo && lang != browser.LangPy && lang != browser.LangJava {
-		fmt.Printf("Unsupported language: %s\n%s", lang, supportedlangs())
+		fmt.Printf("Unsupported language: %s\n%s", lang, supportedLangs())
 		os.Exit(1)
 	}
 }
 
-func supportedlangs() string {
+func supportedLangs() string {
 	return fmt.Sprintf("Supported languages: %s, %s, %s\n", browser.LangGo, browser.LangPy, browser.LangJava)
 }

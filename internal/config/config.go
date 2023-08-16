@@ -17,6 +17,7 @@ type Validator struct {
 }
 
 type Configuration struct {
+	Lang         string      `json:"lang"`
 	IgnoredPaths []string    `json:"ignore"`
 	Validators   []Validator `json:"validators"`
 	Port         int         `json:"port"`
