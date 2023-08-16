@@ -99,12 +99,12 @@ func detectLanguage() string {
 }
 
 func checkSupportedLang(lang string) {
-	if lang != browser.LangGo && lang != browser.LangPy {
+	if lang != browser.LangGo && lang != browser.LangPy && lang != browser.LangJava {
 		fmt.Printf("Unsupported language: %s\n%s", lang, supportedlangs())
 		os.Exit(1)
 	}
 }
 
 func supportedlangs() string {
-	return fmt.Sprintf("Supported languages: %s, %s\n", browser.LangGo, browser.LangPy)
+	return fmt.Sprintf("Supported languages: %s, %s, %s\n", browser.LangGo, browser.LangPy, browser.LangJava)
 }

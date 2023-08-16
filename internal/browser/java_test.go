@@ -1,6 +1,7 @@
 package browser
 
 import (
+	"fmt"
 	"github.com/ismailbayram/bigpicture/internal/graph"
 	"github.com/stretchr/testify/assert"
 	"os"
@@ -51,39 +52,37 @@ func TestJavaBrowser_ParseFile(t *testing.T) {
 		tree:         nil,
 		moduleName:   "javaproject",
 	}
+	dir, err := os.Getwd()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println(dir)
 	parentNode := graph.NewNode("javaproject", "./", graph.Dir, nil)
 	node := browser.parseFile("src/com/shashi/service/impl/TrainServiceImpl.java", parentNode)
 	assert.NotNil(t, node)
-	assert.Equal(t, "baskets/service.py", node.Path)
-	assert.Equal(t, "service.py", node.PackageName)
 
-	assert.Equal(t, "/decimal.py", node.ImportRaw[0])
-	assert.Equal(t, "/django/utils/translation.py", node.ImportRaw[1])
-	assert.Equal(t, "/django/db/models.py", node.ImportRaw[2])
-	assert.Equal(t, "/django/db/transaction.py", node.ImportRaw[3])
-	assert.Equal(t, "/baskets/models.py", node.ImportRaw[4])
-	assert.Equal(t, "/baskets/enums.py", node.ImportRaw[5])
-	assert.Equal(t, "/baskets/exceptions.py", node.ImportRaw[6])
-	assert.Equal(t, "/cars/exceptions.py", node.ImportRaw[7])
-	assert.Equal(t, "/cars", node.ImportRaw[8])
+	assert.Equal(t, "src/com/shashi/service/impl/TrainServiceImpl.java", node.Path)
+	assert.Equal(t, "TrainServiceImpl.java", node.PackageName)
+	assert.Equal(t, "/com/shashi/beans/TrainBean.java", node.ImportRaw[0])
+	assert.Equal(t, "/com/shashi/beans/TrainException.java", node.ImportRaw[1])
+	assert.Equal(t, "/com/shashi/constant/ResponseCode.java", node.ImportRaw[2])
+	assert.Equal(t, "/com/shashi/service/TrainService.java", node.ImportRaw[3])
+	assert.Equal(t, "/com/shashi/utility/DBUtil.java", node.ImportRaw[4])
 
-	assert.Equal(t, 143, node.LineCount)
+	assert.Equal(t, 170, node.LineCount)
 
-	assert.Equal(t, 8, len(node.Functions))
+	assert.Equal(t, 6, len(node.Functions))
 	funcs := map[string]int{
-		"get_or_create_basket": 16,
-		"apply_discounts":      15,
-		"_check_basket_items":  17,
-		"add_basket_item":      22,
-		"clean_discounts":      7,
-		"clean_basket":         7,
-		"delete_basket_item":   7,
-		"complete_basket":      19,
+		"addTrain":                 20,
+		"deleteTrainById":          15,
+		"updateTrain":              20,
+		"getTrainById":             22,
+		"getAllTrains":             24,
+		"getTrainsBetweenStations": 27,
 	}
 	for _, f := range node.Functions {
 		assert.Equal(t, funcs[f.Name], f.LineCount, f.Name)
 	}
-
 }
 
 func TestJavaBrowser_Browse(t *testing.T) {
@@ -97,7 +96,7 @@ func TestJavaBrowser_Browse(t *testing.T) {
 func TestJavaBrowser_browse(t *testing.T) {
 	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}).(*JavaBrowser)
 
-	browser.browse("src/", browser.tree.Root)
+	browser.browse("src/com/shashi/service", browser.tree.Root)
 
-	assert.Equal(t, 6, len(browser.tree.Nodes))
+	assert.Equal(t, 8, len(browser.tree.Nodes))
 }

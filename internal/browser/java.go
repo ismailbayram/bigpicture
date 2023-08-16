@@ -109,7 +109,6 @@ func (b *JavaBrowser) findImports(javaCode string) []string {
 
 		imports = append(imports, importItem)
 	}
-	fmt.Println(imports)
 
 	return imports
 }
@@ -117,38 +116,30 @@ func (b *JavaBrowser) findImports(javaCode string) []string {
 func (b *JavaBrowser) findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
 
-	lines := strings.Split(fileContent, "\n")
-	functionRegex := regexp.MustCompile(`^\s*def\s+(\w+)\s*\((.*?)\):`)
+	functionPattern := regexp.MustCompile(`(?:public|private|protected)?\s+(?:static\s+)?\w+\s+([\w<>]+)\s+(\w+)\s*\([^)]*\)\s*(?:throws\s+\w+(?:\s*,\s*\w+)*)?\s*\{`)
+	matches := functionPattern.FindAllStringSubmatch(fileContent, -1)
 
-	var currentFunctionName string
-	var currentFunctionContent string
-
-	for _, line := range lines {
-		if matches := functionRegex.FindStringSubmatch(line); len(matches) > 1 {
-			if currentFunctionName != "" {
-				functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
-				currentFunctionContent = ""
-			}
-
-			currentFunctionName = matches[1]
-		}
-
-		if currentFunctionName != "" && (strings.Contains(line, "@") || strings.Contains(line, "class ")) {
-			functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
-			currentFunctionContent = ""
-			currentFunctionName = ""
-			continue
-		}
-
-		if currentFunctionName != "" {
-			currentFunctionContent += line
-			currentFunctionContent += "\n"
-		}
-	}
-
-	if currentFunctionName != "" {
-		functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
+	for _, match := range matches {
+		startIndex := strings.Index(fileContent, match[0])
+		endIndex := findFunctionEndIndex(fileContent, startIndex)
+		functionContent := fileContent[startIndex+len(match[0]) : endIndex]
+		functions[match[2]] = functionContent
 	}
 
 	return functions
+}
+
+func findFunctionEndIndex(javaCode string, startIndex int) int {
+	openBraces := 0
+	for i := startIndex + 1; i < len(javaCode); i++ {
+		if javaCode[i] == '{' {
+			openBraces++
+		} else if javaCode[i] == '}' {
+			openBraces--
+			if openBraces == 0 {
+				return i - 2
+			}
+		}
+	}
+	return -1
 }
