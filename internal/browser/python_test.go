@@ -50,6 +50,7 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 		ignoredPaths: []string{},
 		tree:         nil,
 		moduleName:   "pyproject",
+		rootDir:      "/",
 	}
 	parentNode := graph.NewNode("pyproject", "./", graph.Dir, nil)
 	node := browser.parseFile("baskets/service.py", parentNode)
@@ -87,7 +88,7 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 }
 
 func TestPythonBrowser_Browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}, "/").(*PythonBrowser)
 
 	browser.Browse(".")
 	assert.Equal(t, "pyproject", browser.moduleName)
@@ -95,7 +96,7 @@ func TestPythonBrowser_Browse(t *testing.T) {
 }
 
 func TestPythonBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}).(*PythonBrowser)
+	browser := NewBrowser(LangPy, graph.NewTree("root"), []string{}, "/").(*PythonBrowser)
 
 	browser.browse("base/", browser.tree.Root)
 

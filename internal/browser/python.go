@@ -11,6 +11,7 @@ import (
 type PythonBrowser struct {
 	ignoredPaths []string
 	moduleName   string
+	rootDir      string
 	tree         *graph.Tree
 }
 
@@ -101,9 +102,9 @@ func (b *PythonBrowser) findImports(pythonCode string) []string {
 		var importItem string
 
 		if matches := importRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
+			importItem = b.rootDir + strings.Replace(matches[1], ".", "/", -1) + ".py"
 		} else if matches := fromImportRegex.FindStringSubmatch(line); len(matches) > 1 {
-			importItem = "/" + strings.Replace(matches[1], ".", "/", -1) + ".py"
+			importItem = b.rootDir + strings.Replace(matches[1], ".", "/", -1) + ".py"
 		}
 		if importItem == "" {
 			continue

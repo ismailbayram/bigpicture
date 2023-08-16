@@ -50,6 +50,7 @@ func TestJavaBrowser_ParseFile(t *testing.T) {
 	browser := &JavaBrowser{
 		ignoredPaths: []string{},
 		tree:         nil,
+		rootDir:      "/",
 		moduleName:   "javaproject",
 	}
 	dir, err := os.Getwd()
@@ -58,10 +59,10 @@ func TestJavaBrowser_ParseFile(t *testing.T) {
 	}
 	fmt.Println(dir)
 	parentNode := graph.NewNode("javaproject", "./", graph.Dir, nil)
-	node := browser.parseFile("src/com/shashi/service/impl/TrainServiceImpl.java", parentNode)
+	node := browser.parseFile("src/main/com/shashi/service/impl/TrainServiceImpl.java", parentNode)
 	assert.NotNil(t, node)
 
-	assert.Equal(t, "src/com/shashi/service/impl/TrainServiceImpl.java", node.Path)
+	assert.Equal(t, "src/main/com/shashi/service/impl/TrainServiceImpl.java", node.Path)
 	assert.Equal(t, "TrainServiceImpl.java", node.PackageName)
 	assert.Equal(t, "/com/shashi/beans/TrainBean.java", node.ImportRaw[0])
 	assert.Equal(t, "/com/shashi/beans/TrainException.java", node.ImportRaw[1])
@@ -86,7 +87,7 @@ func TestJavaBrowser_ParseFile(t *testing.T) {
 }
 
 func TestJavaBrowser_Browse(t *testing.T) {
-	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}).(*JavaBrowser)
+	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}, "/").(*JavaBrowser)
 
 	browser.Browse(".")
 	assert.Equal(t, "javaproject", browser.moduleName)
@@ -94,9 +95,9 @@ func TestJavaBrowser_Browse(t *testing.T) {
 }
 
 func TestJavaBrowser_browse(t *testing.T) {
-	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}).(*JavaBrowser)
+	browser := NewBrowser(LangJava, graph.NewTree("root"), []string{}, "/").(*JavaBrowser)
 
-	browser.browse("src/com/shashi/service", browser.tree.Root)
+	browser.browse("src/main/com/shashi/service", browser.tree.Root)
 
 	assert.Equal(t, 8, len(browser.tree.Nodes))
 }

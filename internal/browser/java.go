@@ -11,6 +11,7 @@ import (
 type JavaBrowser struct {
 	ignoredPaths []string
 	moduleName   string
+	rootDir      string
 	tree         *graph.Tree
 }
 
@@ -102,7 +103,7 @@ func (b *JavaBrowser) findImports(javaCode string) []string {
 			continue
 		}
 
-		importItem = "/" + strings.Replace(importItem, ".", "/", -1) + ".java"
+		importItem = b.rootDir + strings.Replace(importItem, ".", "/", -1) + ".java"
 		if strings.HasSuffix(importItem, "*.java") {
 			importItem = importItem[:len(importItem)-7]
 		}

@@ -17,6 +17,7 @@ type Validator struct {
 }
 
 type Configuration struct {
+	RootDir      string      `json:"root_dir"`
 	Lang         string      `json:"lang"`
 	IgnoredPaths []string    `json:"ignore"`
 	Validators   []Validator `json:"validators"`
@@ -28,7 +29,8 @@ func Init() *Configuration {
 	defer file.Close()
 
 	cfg := &Configuration{
-		Port: 44525,
+		RootDir: "/",
+		Port:    44525,
 	}
 
 	err := json.NewDecoder(file).Decode(&cfg)

@@ -6,13 +6,13 @@ import (
 )
 
 func TestNewBrowser(t *testing.T) {
-	browser := NewBrowser(LangGo, nil, nil)
+	browser := NewBrowser(LangGo, nil, nil, "/")
 	assert.NotNil(t, browser)
 
-	browser = NewBrowser(LangPy, nil, nil)
+	browser = NewBrowser(LangPy, nil, nil, "/")
 	assert.NotNil(t, browser)
 
-	browser = NewBrowser(LangJava, nil, nil)
+	browser = NewBrowser(LangJava, nil, nil, "/")
 	assert.NotNil(t, browser)
 }
 

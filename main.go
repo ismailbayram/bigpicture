@@ -51,7 +51,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	brow := browser.NewBrowser(lang, bp.tree, bp.cfg.IgnoredPaths)
+	brow := browser.NewBrowser(lang, bp.tree, bp.cfg.IgnoredPaths, bp.cfg.RootDir)
 	brow.Browse(".")
 	bp.tree.GenerateLinks()
 	bp.tree.CalculateInstability()

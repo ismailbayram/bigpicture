@@ -82,7 +82,23 @@ bigpicture validate
     ]
 }
 ```
+**root_dir**: Let's say that you have java project and its structure is like this:
+```
+src
+├── main
+├──├── java
+```
+But imports are like this:
+```
+import com.example.project
+```
+In this case, you should define the root directory of the project as `/src/main/java/` 
+in order to bigpicture build import maps correctly. Do not forget `/` both at the beginning and the end of the path.
+
+*Note: Supported for Java and Python.*
+
 **lang**: BigPicture sometimes fails on detecting language of the project. You can define the language of the project.
+
 **port**: Port number of the server. Default value is 44525.
 
 **ignore**: Directories to ignore. Default value is empty. For instance in this project `web` directory includes

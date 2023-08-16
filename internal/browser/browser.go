@@ -17,7 +17,7 @@ type Browser interface {
 	Browse(parentPath string)
 }
 
-func NewBrowser(lang string, tree *graph.Tree, ignoredPaths []string) Browser {
+func NewBrowser(lang string, tree *graph.Tree, ignoredPaths []string, rootDir string) Browser {
 	switch lang {
 	case LangGo:
 		return &GoBrowser{
@@ -28,11 +28,13 @@ func NewBrowser(lang string, tree *graph.Tree, ignoredPaths []string) Browser {
 		return &PythonBrowser{
 			ignoredPaths: ignoredPaths,
 			tree:         tree,
+			rootDir:      rootDir,
 		}
 	case LangJava:
 		return &JavaBrowser{
 			ignoredPaths: ignoredPaths,
 			tree:         tree,
+			rootDir:      rootDir,
 		}
 	}
 	return nil

@@ -39,7 +39,7 @@ func TestGoBrowser_ParseFile(t *testing.T) {
 }
 
 func TestGoBrowser_Browse(t *testing.T) {
-	browser := NewBrowser(LangGo, graph.NewTree("root"), []string{}).(*GoBrowser)
+	browser := NewBrowser(LangGo, graph.NewTree("root"), []string{}, "/").(*GoBrowser)
 
 	browser.Browse(".")
 	assert.Equal(t, "github.com/ismailbayram/bigpicture", browser.moduleName)
@@ -51,6 +51,7 @@ func TestGoBrowser_browse(t *testing.T) {
 		LangGo,
 		graph.NewTree("root"),
 		[]string{"internal/browser/pyproject", "internal/browser/javaproject"},
+		"/",
 	).(*GoBrowser)
 
 	browser.browse("./internal/browser", browser.tree.Root)
