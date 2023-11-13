@@ -43,16 +43,16 @@ BigPicture allows you to define these rules in a `.bigpicture.json` file and val
 # Installation
 ## Install with Go
 ```bash
-go install github.com/ismailbayram/bigpicture@1.2.0
+go install github.com/ismailbayram/bigpicture@1.2.1
 ```
 ## Install on Linux
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.0/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.1/bigpicture-amd64-linux -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 ## Install on Macos
 ```bash
-curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.0/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
+curl -L https://github.com/ismailbayram/bigpicture/releases/download/1.2.1/bigpicture-amd64-darwin -o /usr/local/bin/bigpicture
 chmod +x /usr/local/bin/bigpicture
 ```
 
