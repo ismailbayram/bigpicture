@@ -25,6 +25,8 @@ func NewValidator(t string, args map[string]any, tree *graph.Tree) (Validator, e
 		return NewFunctionValidator(args, tree)
 	case "file_name":
 		return NewFileNameValidator(args, tree)
+	case "size":
+		return NewSizeValidator(args, tree)
 	default:
 		return nil, fmt.Errorf("unknown validator type: %s", t)
 	}

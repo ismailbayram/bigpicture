@@ -52,6 +52,13 @@
                     "*_test.go"
                 ]
             }
+        },
+        {
+            "type": "size",
+            "args": {
+                "module": "/internal",
+                "max": 49.9
+            }
         }
     ]
 }

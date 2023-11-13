@@ -36,6 +36,8 @@ func TestGoBrowser_ParseFile(t *testing.T) {
 	assert.Equal(t, "/internal/config", node.ImportRaw[1])
 	assert.Equal(t, "/internal/graph", node.ImportRaw[2])
 	assert.Equal(t, "/internal/server", node.ImportRaw[3])
+
+	assert.Equal(t, 110, node.LineCount)
 }
 
 func TestGoBrowser_Browse(t *testing.T) {
@@ -55,6 +57,16 @@ func TestGoBrowser_browse(t *testing.T) {
 	).(*GoBrowser)
 
 	browser.browse("./internal/browser", browser.tree.Root)
-
 	assert.Equal(t, 9, len(browser.tree.Nodes))
+
+	browser = NewBrowser(
+		LangGo,
+		graph.NewTree("root"),
+		[]string{},
+		"/",
+	).(*GoBrowser)
+
+	browser.browse("./internal/config", browser.tree.Root)
+	assert.Equal(t, 3, len(browser.tree.Nodes))
+	assert.Equal(t, 94, browser.tree.Root.LineCount)
 }

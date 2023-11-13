@@ -31,6 +31,10 @@ func TestNewValidator(t *testing.T) {
 	assert.Nil(t, err)
 	assert.IsType(t, &FileNameValidator{}, validator)
 
+	validator, err = NewValidator("size", map[string]any{"module": "a", "max": float64(10)}, tree)
+	assert.Nil(t, err)
+	assert.IsType(t, &SizeValidator{}, validator)
+
 	validator, err = NewValidator("unknown", map[string]any{}, tree)
 	assert.NotNil(t, err)
 	assert.Nil(t, validator)

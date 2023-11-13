@@ -6,19 +6,19 @@ import (
 	"strings"
 )
 
-type LineCountValidatorArgs struct {
+type SizeValidatorArgs struct {
 	Module string   `json:"module" validate:"required=true"`
-	Max    int      `json:"max" validate:"required=true,min=1"`
+	Max    float64  `json:"max" validate:"required=true,min=1"`
 	Ignore []string `json:"ignore"`
 }
 
-type LineCountValidator struct {
-	args *LineCountValidatorArgs
+type SizeValidator struct {
+	args *SizeValidatorArgs
 	tree *graph.Tree
 }
 
-func NewLineCountValidator(args map[string]any, tree *graph.Tree) (*LineCountValidator, error) {
-	validatorArgs := &LineCountValidatorArgs{}
+func NewSizeValidator(args map[string]any, tree *graph.Tree) (*SizeValidator, error) {
+	validatorArgs := &SizeValidatorArgs{}
 	if err := validateArgs(args, validatorArgs); err != nil {
 		return nil, err
 	}
@@ -33,23 +33,27 @@ func NewLineCountValidator(args map[string]any, tree *graph.Tree) (*LineCountVal
 	}
 	validatorArgs.Module = module
 
-	return &LineCountValidator{
+	return &SizeValidator{
 		args: validatorArgs,
 		tree: tree,
 	}, nil
 }
 
-func (v *LineCountValidator) Validate() error {
+func (v *SizeValidator) Validate() error {
+	totalSize := v.tree.Nodes[v.args.Module].LineCount
+
 	for _, node := range v.tree.Nodes {
-		if isIgnored(v.args.Ignore, node.Path) || node.Type == graph.Dir {
+		if isIgnored(v.args.Ignore, node.Path) || node.Type == graph.File {
 			continue
 		}
 
-		if strings.HasPrefix(node.Path, v.args.Module) && node.LineCount > v.args.Max {
+		nodeSizePercent := float64(node.LineCount) / float64(totalSize) * 100
+
+		if node.Parent == v.args.Module && nodeSizePercent > v.args.Max {
 			return fmt.Errorf(
-				"Line count of module '%s' is %d, but maximum allowed is %d",
+				"Size of module '%s' is %.2f%%, but maximum allowed is %.2f%%",
 				node.Path,
-				node.LineCount,
+				nodeSizePercent,
 				v.args.Max,
 			)
 		}

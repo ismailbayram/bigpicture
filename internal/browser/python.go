@@ -59,9 +59,11 @@ func (b *PythonBrowser) browse(parentPath string, parentNode *graph.Node) {
 			node := graph.NewNode(fName, path, graph.Dir, nil)
 			b.tree.Nodes[node.Path] = node
 			b.browse(path, node)
+			parentNode.LineCount += node.LineCount
 		} else if strings.HasSuffix(fName, ".py") {
 			node := b.parseFile(path, parentNode)
 			b.tree.Nodes[node.Path] = node
+			parentNode.LineCount += node.LineCount
 		}
 	}
 }

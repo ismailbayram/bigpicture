@@ -38,8 +38,8 @@ func TestNewLineCountValidator(t *testing.T) {
 
 func TestLineCountValidator_Validate(t *testing.T) {
 	tree := graph.NewTree("root")
-	tree.Nodes["a"] = graph.NewNode("a", "a", graph.Dir, []string{})
-	tree.Nodes["b"] = graph.NewNode("b", "b", graph.Dir, []string{})
+	tree.Nodes["a"] = graph.NewNode("a", "a", graph.File, []string{})
+	tree.Nodes["b"] = graph.NewNode("b", "b", graph.File, []string{})
 	tree.Nodes["a"].LineCount = 100
 	tree.Nodes["b"].LineCount = 200
 
@@ -58,12 +58,12 @@ func TestLineCountValidator_Validate(t *testing.T) {
 		"browser/go",
 	})
 	tree.Nodes["config"] = graph.NewNode("config", "config", graph.Dir, []string{})
-	tree.Nodes["config/subconfig"] = graph.NewNode("subconfig", "config/subconfig", graph.Dir, []string{})
+	tree.Nodes["config/subconfig"] = graph.NewNode("subconfig", "config/subconfig", graph.File, []string{})
 	tree.Nodes["config/subconfig"].LineCount = 200
-	tree.Nodes["browser"] = graph.NewNode("browser", "browser", graph.Dir, []string{
+	tree.Nodes["browser"] = graph.NewNode("browser", "browser", graph.File, []string{
 		"config/subconfig",
 	})
-	tree.Nodes["browser/go"] = graph.NewNode("go", "browser/go", graph.Dir, []string{
+	tree.Nodes["browser/go"] = graph.NewNode("go", "browser/go", graph.File, []string{
 		"config/subconfig",
 	})
 

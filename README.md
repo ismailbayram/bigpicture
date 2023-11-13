@@ -37,6 +37,7 @@ BigPicture allows you to define these rules in a `.bigpicture.json` file and val
     - [FunctionValidator](#functionvalidator)
     - [InstabilityValidator](#instabilityvalidator)
     - [FileNameValidator](#filenamevalidator)
+    - [SizeValidator](#sizevalidator)
 - [Contribution](#contribution)
 
 # Installation
@@ -199,6 +200,19 @@ Checks if the package has files which do not match the given regular expression.
         "ignore": [
             "*_test.go"
         ]
+    }
+}
+```
+
+### SizeValidator
+Checks the percentage size of the packages under the given directory according to the lines of code. 
+
+```json
+{
+    "type": "size",
+    "args": {
+        "module": "/internal",
+        "max": 25
     }
 }
 ```

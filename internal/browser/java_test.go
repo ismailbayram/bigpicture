@@ -100,4 +100,5 @@ func TestJavaBrowser_browse(t *testing.T) {
 	browser.browse("src/main/com/shashi/service", browser.tree.Root)
 
 	assert.Equal(t, 8, len(browser.tree.Nodes))
+	assert.Equal(t, browser.tree.Root.LineCount, 493)
 }

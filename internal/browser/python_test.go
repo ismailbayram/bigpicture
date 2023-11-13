@@ -101,4 +101,5 @@ func TestPythonBrowser_browse(t *testing.T) {
 	browser.browse("base/", browser.tree.Root)
 
 	assert.Equal(t, 6, len(browser.tree.Nodes))
+	assert.Equal(t, browser.tree.Root.LineCount, 191)
 }
