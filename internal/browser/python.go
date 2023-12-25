@@ -125,7 +125,7 @@ func (b *PythonBrowser) findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
 
 	lines := strings.Split(fileContent, "\n")
-	functionRegex := regexp.MustCompile(`^\s*def\s+(\w+)\s*\((.*?)\):`)
+	functionRegex := regexp.MustCompile(`def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*([a-zA-Z_]\w*|\w*))?:`)
 
 	var currentFunctionName string
 	var currentFunctionContent string

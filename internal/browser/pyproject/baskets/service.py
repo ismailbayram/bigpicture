@@ -141,3 +141,19 @@ class BasketService:
         basket.save()
 
         return basket
+
+    def _create_quotation_items(self, quotation: Quotation | Order, basket_items: list[BasketItem]) -> None:
+        QuotationItem.objects.bulk_create(
+            [
+                QuotationItem(
+                    quotation=quotation,
+                    product_remote_id=bi.product_remote_id,
+                    quantity=bi.quantity,
+                    division=bi.division,
+                    price=bi.price,
+                    data=bi.data,
+                    currency=bi.currency,
+                )
+                for bi in basket_items
+            ]
+        )
