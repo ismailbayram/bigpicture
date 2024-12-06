@@ -1,6 +1,6 @@
 module github.com/ismailbayram/bigpicture
 
-go 1.20
+go 1.23
 
 require (
 	github.com/go-playground/validator/v10 v10.14.1
@@ -8,8 +8,6 @@ require (
 )
 
 require (
-	github.com/DataDog/go-python3 v0.0.0-20211102160307-40adc605f1fe // indirect
-	github.com/alecthomas/participle/v2 v2.0.0 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gabriel-vasile/mimetype v1.4.2 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
@@ -17,7 +15,6 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/leodido/go-urn v1.2.4 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
-	github.com/sbinet/go-python v0.1.0 // indirect
 	golang.org/x/crypto v0.11.0 // indirect
 	golang.org/x/net v0.12.0 // indirect
 	golang.org/x/sys v0.10.0 // indirect

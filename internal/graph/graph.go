@@ -48,9 +48,15 @@ func (t *Tree) GenerateLinks() {
 
 func (t *Tree) CalculateInstability() {
 	for _, node := range t.Nodes {
+		if node == nil {
+			continue
+		}
 		importCount := 0   // from node to other modules
 		importedCount := 0 // from other modules to node
 		for _, link := range t.Links {
+			if link.From == nil || link.To == nil {
+				continue
+			}
 			if link.From.Path == node.Path && link.To.Parent == node.Parent {
 				importCount += 1
 			}
