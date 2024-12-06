@@ -123,38 +123,76 @@ func (b *PythonBrowser) findImports(pythonCode string) []string {
 
 func (b *PythonBrowser) findFunctions(fileContent string) map[string]string {
 	functions := make(map[string]string)
-
 	lines := strings.Split(fileContent, "\n")
-	functionRegex := regexp.MustCompile(`def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*([a-zA-Z_]\w*|\w*))?:`)
+	functionRegex := regexp.MustCompile(`^\s*def\s+([a-zA-Z_]\w*)\s*\(([^)]*)\)\s*(?:->\s*[^:]+)?:\s*$`)
+	classRegex := regexp.MustCompile(`^\s*class\s+`)
 
 	var currentFunctionName string
-	var currentFunctionContent string
+	var currentFunctionContent strings.Builder
+	var baseIndentLevel int = -1
+	var inClass bool
+	var classIndentLevel int = -1
 
 	for _, line := range lines {
-		if matches := functionRegex.FindStringSubmatch(line); len(matches) > 1 {
+		trimmedLine := strings.TrimSpace(line)
+		if trimmedLine == "" {
 			if currentFunctionName != "" {
-				functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
-				currentFunctionContent = ""
+				currentFunctionContent.WriteString(line + "\n")
 			}
-
-			currentFunctionName = matches[1]
-		}
-
-		if currentFunctionName != "" && (strings.Contains(line, "@") || strings.Contains(line, "class ")) {
-			functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
-			currentFunctionContent = ""
-			currentFunctionName = ""
 			continue
 		}
 
+		// Calculate current line's indent level
+		currentIndentLevel := len(line) - len(strings.TrimLeft(line, " \t"))
+
+		// Check if this is a class definition
+		if classRegex.MatchString(line) {
+			inClass = true
+			classIndentLevel = currentIndentLevel
+			continue
+		}
+
+		// Check if we're exiting a class
+		if inClass && currentIndentLevel <= classIndentLevel {
+			inClass = false
+			classIndentLevel = -1
+		}
+
+		// Check if this is a function definition
+		if matches := functionRegex.FindStringSubmatch(line); len(matches) > 1 {
+			// If we were processing a previous function, save it
+			if currentFunctionName != "" {
+				functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent.String())
+			}
+
+			// Only process class methods (skip standalone functions)
+			if inClass {
+				currentFunctionName = matches[1]
+				currentFunctionContent.Reset()
+				currentFunctionContent.WriteString(line + "\n")
+				baseIndentLevel = currentIndentLevel
+			}
+			continue
+		}
+
+		// If we're inside a function
 		if currentFunctionName != "" {
-			currentFunctionContent += line
-			currentFunctionContent += "\n"
+			// Check if we're still in the function's scope
+			if baseIndentLevel >= 0 && currentIndentLevel <= baseIndentLevel && trimmedLine != "" {
+				// We've exited the function
+				functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent.String())
+				currentFunctionName = ""
+				currentFunctionContent.Reset()
+				baseIndentLevel = -1
+			} else {
+				currentFunctionContent.WriteString(line + "\n")
+			}
 		}
 	}
 
+	// Handle the last function if exists
 	if currentFunctionName != "" {
-		functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent)
+		functions[currentFunctionName] = strings.TrimSpace(currentFunctionContent.String())
 	}
 
 	return functions

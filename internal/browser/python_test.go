@@ -68,9 +68,9 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 	assert.Equal(t, "/cars/exceptions.py", node.ImportRaw[7])
 	assert.Equal(t, "/cars", node.ImportRaw[8])
 
-	assert.Equal(t, 159, node.LineCount)
+	assert.Equal(t, 216, node.LineCount)
 
-	assert.Equal(t, 9, len(node.Functions))
+	assert.Equal(t, 11, len(node.Functions))
 	funcs := map[string]int{
 		"get_or_create_basket":    16,
 		"apply_discounts":         15,
@@ -81,6 +81,8 @@ func TestPythonBrowser_ParseFile(t *testing.T) {
 		"delete_basket_item":      7,
 		"complete_basket":         19,
 		"_create_quotation_items": 14,
+		"check_discount_code":     24,
+		"apply_campaigns":         29,
 	}
 	for _, f := range node.Functions {
 		assert.Equal(t, funcs[f.Name], f.LineCount, f.Name)

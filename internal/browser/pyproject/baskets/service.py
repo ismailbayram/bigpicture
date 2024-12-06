@@ -157,3 +157,60 @@ class BasketService:
                 for bi in basket_items
             ]
         )
+
+   def check_discount_code(self, code: str) -> Campaign:
+        discount_code = (
+            DiscountCode.objects.filter(
+                Q(user=None) | Q(user=self.basket.user),
+                code=code,
+                campaign__is_active=True,
+                campaign__start_date__lte=timezone.now(),
+                campaign__end_date__gte=timezone.now(),
+            )
+            .select_related("user", "campaign", "campaign__condition", "campaign__benefit")
+            .first()
+        )
+
+        if (
+            not discount_code
+            or (discount_code.campaign.start_date > timezone.now() or discount_code.campaign.end_date < timezone.now())
+            or self._is_max_usage_per_user_exceeded(discount_code.campaign)
+        ):
+            raise DiscountCodeInvalidException
+
+        condition = get_condition(discount_code.campaign.condition, self.basket)
+        if not condition.is_satisfied():
+            raise DiscountCodeFailedException(params=[condition.failed_message])
+
+        return discount_code.campaign
+
+    def apply_campaigns(self) -> [CampaignResult]:
+        self.basket.clear_discounts()
+        campaign_results: [CampaignResult] = []
+
+        campaigns = list(self.get_campaigns())
+
+        if self.basket.discount_code:
+            try:
+                discount_code_campaign = self.check_discount_code(self.basket.discount_code)
+                campaigns.insert(0, discount_code_campaign)
+            except (DiscountCodeInvalidException, DiscountCodeFailedException):
+                self.basket.discount_code = None
+                self.basket.save()
+
+        for campaign in campaigns:
+            if self._is_max_usage_per_user_exceeded(campaign):
+                continue
+
+            condition = get_condition(campaign.condition, self.basket)
+            benefit = get_benefit(campaign.benefit, self.basket)
+
+            if condition.is_satisfied():
+                result = benefit.apply()
+                campaign_results.append(result)
+                self.basket.add_discount(result)
+            else:
+                failed_message = f"{condition.failed_message} {benefit.courage_message}"
+                self.basket.add_failed_message(failed_message)
+
+        return campaign_results
